@@ -6,6 +6,7 @@ import math
 import sys
 import csv
 from create_dictionary import CreateDictionary
+from column_combination import ColumnCombination
 
 if __name__ == "__main__":
 
@@ -18,9 +19,10 @@ if __name__ == "__main__":
     f.close()
     csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"]
 
-    createDic = CreateDictionary(csv_data, csv_contents_type)
+    data_dict = CreateDictionary(csv_data, csv_contents_type).initialize_dic()
+    column_combination = ColumnCombination(data_dict).create_combination()
 
-    csv_data_table = createDic.initialize_dic()
+
 
 
     # csv_data = np.loadtxt("./TmaxDay_data.csv", delimiter=".", dtype=str)
