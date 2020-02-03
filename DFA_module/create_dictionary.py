@@ -39,6 +39,11 @@ class CreateDictionary():
             column_dic[item]["data_type"] = self.data_type_meta[count]
             if column_dic[item]["data_type"] == "num":
                 column_dic[item] = self.create_numerical_dic(column_dic[item])
+            if column_dic[item]["data_type"] == "tem":
+                column_dic[item]["year"] = []
+                column_dic[item]["month"] = []
+                column_dic[item]["day"] = []
+                column_dic[item] = self.create_temporal_dic(column_dic[item])
             count += 1
 
 
@@ -54,6 +59,13 @@ class CreateDictionary():
         column["qua_1"], column["med"], column["qua_3"] = self.calculate_Stat(
             column["data"])
         column["qua_range"] = column["qua_3"] - column["qua_1"]
+        return column
+
+    def create_temporal_dic(self, column):
+        for enum in range(len(column['data'])):
+            column['month'].append(column['data'][enum].split("/")[0])
+            column['day'].append(column['data'][enum].split("/")[1])
+            column['year'].append(column['data'][enum].split("/")[2])
         return column
 
     def calculate_Avg(self, column):
