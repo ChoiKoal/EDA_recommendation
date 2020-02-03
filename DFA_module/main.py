@@ -19,11 +19,12 @@ if __name__ == "__main__":
     f.close()
     csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"]
 
+    #Create Column Data Dictionary
     data_dict = CreateDictionary(csv_data, csv_contents_type).initialize_dic()
+
+    #Create Column Combination
     column_combination = ColumnCombination(data_dict).create_combination()
 
+    print ("Column combination Created")
 
 
-
-    # csv_data = np.loadtxt("./TmaxDay_data.csv", delimiter=".", dtype=str)
-    # print (csv_data)
