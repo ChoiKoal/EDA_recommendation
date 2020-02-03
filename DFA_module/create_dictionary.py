@@ -38,17 +38,23 @@ class CreateDictionary():
             column_dic[item]["data"] = np.transpose(csv_data_table)[count]
             column_dic[item]["data_type"] = self.data_type_meta[count]
             if column_dic[item]["data_type"] == "num":
-                for i in range(len(column_dic[item]["data"])):
-                    if column_dic[item]["data"][i] == "":
-                        column_dic[item]["data"][i] = "0"
-                column_dic[item]["data"] = column_dic[item]["data"].astype(float)
-                column_dic[item]["enum"], column_dic[item]["avg"] = self.calculate_Avg(column_dic[item]["data"])
-                column_dic[item]["min"], column_dic[item]["max"], column_dic[item]["std"], column_dic[item]["var"], \
-                column_dic[item]["qua_1"], column_dic[item]["med"], column_dic[item]["qua_3"] = self.calculate_Stat(column_dic[item]["data"])
+                column_dic[item] = self.create_numerical_dic(column_dic[item])
             count += 1
 
 
         return column_dic
+
+    def create_numerical_dic(self, column):
+        for i in range(len(column["data"])):
+            if column["data"][i] == "":
+                column["data"][i] = "0"
+        column["data"] = column["data"].astype(float)
+        column["enum"], column["avg"] = self.calculate_Avg(column["data"])
+        column["min"], column["max"], column["std"], column["var"], \
+        column["qua_1"], column["med"], column["qua_3"] = self.calculate_Stat(
+            column["data"])
+        column["qua_range"] = column["qua_3"] - column["qua_1"]
+        return column
 
     def calculate_Avg(self, column):
         """
