@@ -35,12 +35,10 @@ class Transformation():
                 transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_1_type == 'tem' and column_2_type == 'num':
                 transformed = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
-                print ("Bin/Group by X, AGG by Y")
             if column_2_type == 'tem' and column_1_type == 'cat':
                 transformed = self.groupby_count(wrapped, combination_dict['column2'], combination_dict['column1'])
-                print ("Bin/Group by X, CNT by Y")
             if column_2_type == 'tem' and column_1_type == 'num':
-                print ("Bin/Group by X, AGG by Y")
+                transformed = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
 
     def categorical_transformation(self, combination_dict):
         if combination_dict['column_count'] == 2:
@@ -49,14 +47,10 @@ class Transformation():
             wrapped = self.pandas_container(combination_dict)
             if column_1_type == 'cat' and column_2_type == 'cat':
                 transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
-                print ("Group by X, CNT by Y")
             if column_1_type == 'cat' and column_2_type == 'num':
-                print ("Group by X, AGG by Y")
-            if column_2_type == 'cat' and column_1_type == 'cat':
-                transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
-                print ("Group by X, CNT by Y")
+                transformed = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_2_type == 'cat' and column_1_type == 'num':
-                print ("Group by X, AGG by Y")
+                transformed = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
 
     def numerical_transformation(self, combination_dict):
         if combination_dict['column_count'] == 2:
@@ -89,6 +83,7 @@ class Transformation():
         transform_scenario["X"] = combination_dict1
         transform_scenario["Y"] = combination_dict2
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
+        transform_scenario["transform_score"] = self.calculate_transformation_score(grouped, combination_dict2)
 
         print (self.scenario_dict["%d" %self.scenario_num]["transform"])
         self.scenario_num += 1
@@ -102,22 +97,33 @@ class Transformation():
         transform_scenario["X"] = combination_dict1
         transform_scenario["Y"] = combination_dict2
         transform_scenario["Agg_func"] = "sum"
+        transform_scenario["transform_score"] = self.calculate_transformation_score(grouped_sum, combination_dict2)
+
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
 
         print (self.scenario_dict["%d" %self.scenario_num]["transform"])
         self.scenario_num += 1
 
-        grouped_avg = dataframe['column2'].groupby(dataframe['column1']).agg
+        grouped_avg = dataframe['column2'].groupby(dataframe['column1']).mean()
         transform_scenario = {}
         transform_scenario["transform"] = "Groupby %s Agg(avg) %s" %(combination_dict1, combination_dict2)
         transform_scenario["X"] = combination_dict1
         transform_scenario["Y"] = combination_dict2
         transform_scenario["Agg_func"] = "avg"
+        transform_scenario["transform_score"] = self.calculate_transformation_score(grouped_sum, combination_dict2)
+
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
 
         print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        print ("Transformation score : %.4f" %self.scenario_dict["%d" %self.scenario_num]["transform_score"])
         self.scenario_num += 1
         return grouped_sum
 
     def bining(self, dataframe):
         return 0
+
+    def calculate_transformation_score(self, aggregated, measure):
+        original_data_count = self.data_dict[measure]["enum"]
+        aggregated_data_count = len(aggregated)
+        score = 1 - aggregated_data_count/original_data_count
+        return score
