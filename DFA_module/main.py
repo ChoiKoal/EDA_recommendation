@@ -7,6 +7,7 @@ import sys
 import csv
 from create_dictionary import CreateDictionary
 from column_combination import ColumnCombination
+from transformation import Transformation
 
 if __name__ == "__main__":
 
@@ -25,6 +26,12 @@ if __name__ == "__main__":
     #Create Column Combination
     column_combination = ColumnCombination(data_dict).create_combination()
 
-    print ("Column combination Created")
+    print ("Column combination Created.")
+
+    scenario_dict = {}
+    Transformation(data_dict, column_combination, scenario_dict).transformation()
+
+
+
 
 

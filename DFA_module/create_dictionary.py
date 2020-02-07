@@ -37,6 +37,15 @@ class CreateDictionary():
             column_dic[item] = {}
             column_dic[item]["data"] = np.transpose(csv_data_table)[count]
             column_dic[item]["data_type"] = self.data_type_meta[count]
+            column_dic[item]["isnull"] = np.zeros(len(column_dic[item]["data"]), dtype=bool)
+            enum = len(column_dic[item]["data"])
+            for i in range(len(column_dic[item]["data"])):
+                if column_dic[item]["data"][i] == "":
+                    column_dic[item]["isnull"][i] = True
+                    enum -= 1
+            column_dic[item]["enum"] = enum
+
+
             if column_dic[item]["data_type"] == "num":
                 column_dic[item] = self.create_numerical_dic(column_dic[item])
             if column_dic[item]["data_type"] == "tem":
@@ -44,6 +53,20 @@ class CreateDictionary():
                 column_dic[item]["month"] = []
                 column_dic[item]["day"] = []
                 column_dic[item] = self.create_temporal_dic(column_dic[item])
+
+                column_dic[item + "year"] = {}
+                column_dic[item + "year"]["data"] = column_dic[item]["year"]
+                column_dic[item + "year"]["data_type"] = "tem"
+
+                column_dic["month"] = {}
+                column_dic["month"]["data"] = column_dic[item]["month"]
+                column_dic["month"]["data_type"] = "tem"
+
+                column_dic["day"] = {}
+                column_dic["day"]["data"] = column_dic[item]["day"]
+                column_dic["day"]["data_type"] = "tem"
+
+                del column_dic[item]
             count += 1
 
 
@@ -52,9 +75,10 @@ class CreateDictionary():
     def create_numerical_dic(self, column):
         for i in range(len(column["data"])):
             if column["data"][i] == "":
+                column["isnull"][i] = True
                 column["data"][i] = "0"
         column["data"] = column["data"].astype(float)
-        column["enum"], column["avg"] = self.calculate_Avg(column["data"])
+        column["avg"] = self.calculate_Avg(column["data"])
         column["min"], column["max"], column["std"], column["var"], \
         column["qua_1"], column["med"], column["qua_3"] = self.calculate_Stat(
             column["data"])
@@ -75,9 +99,8 @@ class CreateDictionary():
         :param column: input column
         :return: enum, avg
         """
-        enum = np.count_nonzero(column)
         avg = np.sum(column)/np.count_nonzero(column)
-        return enum, avg
+        return avg
 
     def create_nonzero_column(self, column):
         nonzero_index = np.nonzero(column)
