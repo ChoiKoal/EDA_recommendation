@@ -30,26 +30,32 @@ class Transformation():
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
-            wrapped = self.pandas_container(combination_dict)
             if column_1_type == 'tem' and column_2_type == 'cat':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_1_type == 'tem' and column_2_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_2_type == 'tem' and column_1_type == 'cat':
+                wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed = self.groupby_count(wrapped, combination_dict['column2'], combination_dict['column1'])
             if column_2_type == 'tem' and column_1_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
 
     def categorical_transformation(self, combination_dict):
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
-            wrapped = self.pandas_container(combination_dict)
+            # wrapped = self.pandas_container(combination_dict)
             if column_1_type == 'cat' and column_2_type == 'cat':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_1_type == 'cat' and column_2_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
             if column_2_type == 'cat' and column_1_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
 
     def numerical_transformation(self, combination_dict):
@@ -57,24 +63,27 @@ class Transformation():
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
             if column_1_type == 'num' and column_2_type != 'num':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 print ("Bin by X, CNT by Y")
             if column_1_type == 'num' and column_2_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 print ("Bin by X, AGG by Y")
             if column_1_type != 'num' and column_2_type == 'num':
+                wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 print ("Bin by X, CNT by Y")
 
-    def pandas_container(self, combination_dict):
-        if combination_dict['column_count'] == 2:
-            column_1_name = combination_dict['column1']
-            column_2_name = combination_dict['column2']
+    def pandas_container(self, column1, column2):
 
-            column_1 = self.data_dict[column_1_name]
-            column_2 = self.data_dict[column_2_name]
+        column_1_name = column1
+        column_2_name = column2
 
-            wrapped_data = pd.DataFrame({'column1' : column_1['data'],
-                                         'column2' : column_2['data']})
-            # grouped = wrapped_data['column1'].groupby['column2']
-            return wrapped_data
+        column_1 = self.data_dict[column_1_name]
+        column_2 = self.data_dict[column_2_name]
+
+        wrapped_data = pd.DataFrame({'column1' : column_1['data'],
+                                     'column2' : column_2['data']})
+        # grouped = wrapped_data['column1'].groupby['column2']
+        return wrapped_data
 
     def groupby_count(self, dataframe, combination_dict1, combination_dict2):
         grouped = dataframe['column2'].groupby(dataframe['column1']).count()
@@ -92,6 +101,7 @@ class Transformation():
     def groupby_agg(self, dataframe, combination_dict1, combination_dict2):
 
         grouped_sum = dataframe['column2'].groupby(dataframe['column1']).sum()
+
         transform_scenario = {}
         transform_scenario["transform"] = "Groupby %s Agg(sum) %s" %(combination_dict1, combination_dict2)
         transform_scenario["X"] = combination_dict1
