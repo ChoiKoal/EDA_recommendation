@@ -13,6 +13,7 @@ class Transformation():
         self.combination_dict = combination_dict
         self.scenario_dict = scenario_dict
         self.scenario_num = 0
+        self.agg_func = ["sum", "avg"]
 
     def transformation(self):
         for key in self.combination_dict.keys():
@@ -32,8 +33,8 @@ class Transformation():
             wrapped = self.pandas_container(combination_dict)
             if column_1_type == 'tem' and column_2_type == 'cat':
                 transformed = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
-                print ("Bin/Group by X, CNT by Y")
             if column_1_type == 'tem' and column_2_type == 'num':
+                transformed = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
                 print ("Bin/Group by X, AGG by Y")
             if column_2_type == 'tem' and column_1_type == 'cat':
                 transformed = self.groupby_count(wrapped, combination_dict['column2'], combination_dict['column1'])
@@ -93,6 +94,30 @@ class Transformation():
         self.scenario_num += 1
         return grouped
 
+    def groupby_agg(self, dataframe, combination_dict1, combination_dict2):
+
+        grouped_sum = dataframe['column2'].groupby(dataframe['column1']).sum()
+        transform_scenario = {}
+        transform_scenario["transform"] = "Groupby %s Agg(sum) %s" %(combination_dict1, combination_dict2)
+        transform_scenario["X"] = combination_dict1
+        transform_scenario["Y"] = combination_dict2
+        transform_scenario["Agg_func"] = "sum"
+        self.scenario_dict["%d" %self.scenario_num] = transform_scenario
+
+        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        self.scenario_num += 1
+
+        grouped_avg = dataframe['column2'].groupby(dataframe['column1']).agg
+        transform_scenario = {}
+        transform_scenario["transform"] = "Groupby %s Agg(avg) %s" %(combination_dict1, combination_dict2)
+        transform_scenario["X"] = combination_dict1
+        transform_scenario["Y"] = combination_dict2
+        transform_scenario["Agg_func"] = "avg"
+        self.scenario_dict["%d" %self.scenario_num] = transform_scenario
+
+        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        self.scenario_num += 1
+        return grouped_sum
 
     def bining(self, dataframe):
         return 0
