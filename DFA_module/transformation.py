@@ -199,6 +199,10 @@ class Transformation():
             score += self.calculate_entropy(self.data_dict[picked_scenario["Y"]])
         if distinct_enum_X > 10:
             score += 10 * (self.calculate_entropy(self.data_dict[picked_scenario["Y"]])) / distinct_enum_X
+        if score > 10:
+            print ('omg')
+        if distinct_enum_X >= 2 and distinct_enum_X <= 10:
+            score += self.calculate_entropy(self.data_dict[picked_scenario["Y"]])
         return score
 
     def bar_chart_score(self, grouped):
@@ -210,7 +214,7 @@ class Transformation():
         if distinct_enum_X >= 2 and distinct_enum_X <= 20:
             score = 1
         if distinct_enum_X > 20:
-            score = 20 / len(self.data_dict[picked_scenario["X"]])
+            score = 20 / distinct_enum_X
         return score
 
     def scatter_chart_score(self, grouped):
