@@ -5,6 +5,7 @@ import random
 import math
 import sys
 import csv
+from collections import Counter, defaultdict
 
 class CreateDictionary():
     def __init__(self, csv_data, data_type_meta):
@@ -38,6 +39,7 @@ class CreateDictionary():
             column_dic[item]["data"] = np.transpose(csv_data_table)[count]
             column_dic[item]["data_type"] = self.data_type_meta[count]
             column_dic[item]["isnull"] = np.zeros(len(column_dic[item]["data"]), dtype=bool)
+            column_dic[item]["distinct_enum"] = len(Counter(column_dic[item]["data"]))
             enum = len(column_dic[item]["data"])
             for i in range(len(column_dic[item]["data"])):
                 if column_dic[item]["data"][i] == "":
@@ -54,17 +56,23 @@ class CreateDictionary():
                 column_dic[item]["day"] = []
                 column_dic[item] = self.create_temporal_dic(column_dic[item])
 
-                column_dic[item + "year"] = {}
-                column_dic[item + "year"]["data"] = column_dic[item]["year"]
-                column_dic[item + "year"]["data_type"] = "tem"
+                column_dic[item + " year"] = {}
+                column_dic[item + " year"]["data"] = column_dic[item]["year"]
+                column_dic[item + " year"]["data_type"] = "tem"
+                column_dic[item + " year"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " year"]["distinct_enum"] = len(Counter(column_dic[item + " year"]["data"]))
 
-                column_dic["month"] = {}
-                column_dic["month"]["data"] = column_dic[item]["month"]
-                column_dic["month"]["data_type"] = "tem"
+                column_dic[item + " month"] = {}
+                column_dic[item + " month"]["data"] = column_dic[item]["month"]
+                column_dic[item + " month"]["data_type"] = "tem"
+                column_dic[item + " month"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " month"]["distinct_enum"] = len(Counter(column_dic[item + " month"]["data"]))
 
-                column_dic["day"] = {}
-                column_dic["day"]["data"] = column_dic[item]["day"]
-                column_dic["day"]["data_type"] = "tem"
+                column_dic[item + " day"] = {}
+                column_dic[item + " day"]["data"] = column_dic[item]["day"]
+                column_dic[item + " day"]["data_type"] = "tem"
+                column_dic[item + " day"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " day"]["distinct_enum"] = len(Counter(column_dic[item + " day"]["data"]))
 
                 del column_dic[item]
             count += 1
