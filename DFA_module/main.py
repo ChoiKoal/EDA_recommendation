@@ -8,6 +8,7 @@ import csv
 from create_dictionary import CreateDictionary
 from column_combination import ColumnCombination
 from transformation import Transformation
+from rank import Rank
 
 if __name__ == "__main__":
 
@@ -28,9 +29,12 @@ if __name__ == "__main__":
 
     print ("Column combination Created.")
 
-    scenario_dict = {}
-    Transformation(data_dict, column_combination, scenario_dict).transformation()
 
+    scenario_dict = Transformation(data_dict, column_combination).transformation()
+
+    print ("Scenario dictionary created")
+
+    Rank(scenario_dict).rank()
 
 
 
