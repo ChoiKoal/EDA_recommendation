@@ -150,22 +150,25 @@ class MatrixFactorization():
         pritn fit results
         """
 
-        print("User Latent P:")
-        print(self._P)
-        print("Item Latent Q:")
-        print(self._Q.T)
+        #print("User Latent P:")
+        #print(self._P)
+        #print("Item Latent Q:")
+        #print(self._Q.T)
         # print("P x Q")
         # print(self._P.dot(self._Q.T))
-        print("bias:")
-        print(self._b)
+        #print("bias:")
+        #print(self._b)
         # print("User Latent bias:")
         # print(self._b_P)
         # print("Item Latent bias:")
         # print(self._b_Q)
         # print("Final R matrix: ")
         # print(self.get_complete_matrix())
-        print("Final RMSE:")
-        print(self._training_process[self._epochs-1][1])
+
+        #print("Final RMSE:")
+        #print(self._training_process[self._epochs-1][1])
+
+        return self._training_process[self._epochs-1][1]
 
 
 

@@ -50,6 +50,7 @@ class Transformation():
                 wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed, transformed_2 = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
                 self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
+        #return transformed, transformed_2
 
     def categorical_transformation(self, combination_dict):
         if combination_dict['column_count'] == 2:
@@ -81,7 +82,7 @@ class Transformation():
             if column_1_type == 'num' and column_2_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed = self.numerical_raw(wrapped, combination_dict['column1'], combination_dict['column2'])
-                print ("Bin by X, AGG by Y")
+                # print ("Bin by X, AGG by Y")
             # if column_1_type != 'num' and column_2_type == 'num':
             #     wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
             #     print ("Bin by X, CNT by Y")
@@ -110,9 +111,10 @@ class Transformation():
         transform_scenario["transform_score"] = self.calculate_transformation_score(grouped, combination_dict2)
         transform_scenario["scenario_num"] = self.scenario_num
 
-        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
-        print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
+        # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        # print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
         self.scenario_num += 1
+
         return grouped
 
     def groupby_agg(self, dataframe, combination_dict1, combination_dict2):
@@ -129,8 +131,8 @@ class Transformation():
 
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
 
-        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
-        print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
+        # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        # print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
         self.scenario_num += 1
 
         grouped_avg = dataframe['column2'].groupby(dataframe['column1']).mean()
@@ -144,8 +146,8 @@ class Transformation():
 
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
 
-        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
-        print ("Transformation score : %.4f" %self.scenario_dict["%d" %self.scenario_num]["transform_score"])
+        # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        # print ("Transformation score : %.4f" %self.scenario_dict["%d" %self.scenario_num]["transform_score"])
         self.scenario_num += 1
         return grouped_sum, grouped_avg
 
@@ -159,8 +161,8 @@ class Transformation():
         transform_scenario["scenario_num"] = self.scenario_num
 
         self.scenario_dict["%d" %self.scenario_num] = transform_scenario
-        print (self.scenario_dict["%d" %self.scenario_num]["transform"])
-        print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
+        # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
+        # print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
         self.scenario_num += 1
         return 0
 
@@ -178,10 +180,10 @@ class Transformation():
         bar_chart_score = self.bar_chart_score(grouped)
         if self.data_dict[picked_scenario['X']]['data_type'] == "num" and self.data_dict[picked_scenario['Y']]['data_type'] == "num":
             scatter_chart_score = self.scatter_chart_score(grouped)
-            print("Scatter Chart Score : %.4f" % scatter_chart_score)
+            # print("Scatter Chart Score : %.4f" % scatter_chart_score)
         line_chart_score = self.line_chart_score(grouped)
-        print ("Pie Chart Score : %.4f" % pie_chart_score)
-        print ("Bar Chart Score : %.4f" % bar_chart_score)
+        # print ("Pie Chart Score : %.4f" % pie_chart_score)
+        # print ("Bar Chart Score : %.4f" % bar_chart_score)
 
         return 0
 
