@@ -23,12 +23,14 @@ if __name__ == "__main__":
 
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
     f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    # f = open("./tmaxdata_test.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)
     csv_data = []
     for line in rdr:
         csv_data.append(line)
 
     f.close()
+    # csv_contents_type = ["cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "tem", "tem", "num", "num", "num", "cat"]
     csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"]
     # csv_contents_type = ["cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num"]
 

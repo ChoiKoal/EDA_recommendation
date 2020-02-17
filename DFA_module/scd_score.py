@@ -94,6 +94,7 @@ class Special_Case_Detection():
                             # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
                             least_window = 1
                             stl = seasonal_decompose(data, model='additive', period=self.window_year)
+                            # stl = seasonal_decompose(data, model='multiplicative', period=self.window_year)
                     elif data_unit == self.bin_unit_month:
                         if data_size < self.window_month * 2:
                             least_window = 0
@@ -103,6 +104,7 @@ class Special_Case_Detection():
                             # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
                             least_window = 1
                             stl = seasonal_decompose(data, model='additive', period=self.window_month)
+                            # stl = seasonal_decompose(data, model='multiplicative', period=self.window_year)
                     else:
                         print("stl window error")
 
