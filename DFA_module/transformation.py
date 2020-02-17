@@ -140,8 +140,8 @@ class Transformation():
             #     print ("Bin by X, CNT by Y")
 
     def three_column_groupby_logic(self, combination_dict, num_column):
-        # column_name = [combination_dict['column1'], combination_dict['column2'], combination_dict['column3']]
-        # num_column_name = column_name[num_column]
+        column_name = [combination_dict['column1'], combination_dict['column2'], combination_dict['column3']]
+        num_column_name = column_name[num_column[0]]
 
 
         return 0

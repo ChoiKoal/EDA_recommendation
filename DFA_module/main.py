@@ -14,6 +14,7 @@ import time
 if __name__ == "__main__":
 
     f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)
     csv_data = []
@@ -21,7 +22,8 @@ if __name__ == "__main__":
         csv_data.append(line)
 
     f.close()
-    csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"] #tmaxday
+    # csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"] #tmaxday
+    csv_contents_type = ["cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "tem", "tem", "num", "cat", "num", "num", "num", "cat"] #tmax_raw_data
     # csv_contents_type = ["cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num"] #carcrash
 
     startTime = time.time()

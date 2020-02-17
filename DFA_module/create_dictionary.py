@@ -97,10 +97,19 @@ class CreateDictionary():
         return column
 
     def create_temporal_dic(self, column):
+        # for enum in range(len(column['data'])):
+        #     column['month'].append(int(column['data'][enum].split("/")[0]))
+        #     column['day'].append(int(column['data'][enum].split("/")[1]))
+        #     column['year'].append(int(column['data'][enum].split("/")[2]))
         for enum in range(len(column['data'])):
-            column['month'].append(int(column['data'][enum].split("/")[0]))
-            column['day'].append(int(column['data'][enum].split("/")[1]))
-            column['year'].append(int(column['data'][enum].split("/")[2]))
+            if column['isnull'][enum] != True:
+                column['year'].append(int(column['data'][enum].split(".")[0]))
+                column['month'].append(int(column['data'][enum].split(".")[1]))
+                column['day'].append(int(column['data'][enum].split(".")[2]))
+            else:
+                column['year'].append(0)
+                column['month'].append(0)
+                column['day'].append(0)
         return column
 
     def calculate_Avg(self, column):
