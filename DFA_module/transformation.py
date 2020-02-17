@@ -27,9 +27,20 @@ class Transformation():
                     self.numerical_transformation(self.combination_dict[key])
 
             if self.combination_dict[key]['column_count'] == 3:
-                if self.data_dict[self.combination_dict[key]['column1']]['data_type'] == 'num' or self.data_dict[self.combination_dict[key]['column2']]['data_type'] == 'num' or \
-                        self.data_dict[self.combination_dict[key]['column3']]['data_type'] == 'num':
-                    self.three_column_groupby_logic(self.combination_dict[key])
+                num_count = 0
+                num_column = []
+                if self.data_dict[self.combination_dict[key]['column1']]['data_type'] == 'num':
+                    num_count += 1
+                    num_column.append(0)
+                if self.data_dict[self.combination_dict[key]['column2']]['data_type'] == 'num':
+                    num_count += 1
+                    num_column.append(1)
+                if self.data_dict[self.combination_dict[key]['column3']]['data_type'] == 'num':
+                    num_count += 1
+                    num_column.append(2)
+
+                if num_count == 1:
+                    self.three_column_groupby_logic(self.combination_dict[key], num_column)
 
         m_score = []
         for key in self.scenario_dict:
@@ -103,11 +114,16 @@ class Transformation():
             #     print ("Bin by X, CNT by Y")
             count = 0
             agg_data = []
-            for i in range(len(self.data_dict[combination_dict['column1']]['data'])):
-                if self.data_dict[combination_dict['column1']]['isnull'][i] == False and self.data_dict[combination_dict['column2']]['isnull'][i] == False:
-                    count += 1
-                    agg_data += [self.data_dict[combination_dict['column1']]['data'][i], self.data_dict[combination_dict['column2']]['data'][i]]
-
+            # for i in range(len(self.data_dict[combination_dict['column1']]['data'])):
+            #     if self.data_dict[combination_dict['column1']]['isnull'][i] == False and self.data_dict[combination_dict['column2']]['isnull'][i] == False:
+            #         count += 1
+            #         agg_data += [self.data_dict[combination_dict['column1']]['data'][i], self.data_dict[combination_dict['column2']]['data'][i]]
+            index = np.where((1 - self.data_dict[combination_dict['column1']]['isnull']) * (
+                        1 - self.data_dict[combination_dict['column2']]['isnull']) == True)[0]
+            for i in index:
+                agg_data += [self.data_dict[combination_dict['column1']]['data'][i],
+                             self.data_dict[combination_dict['column2']]['data'][i]]
+                count += 1
             if count > 0:
                 agg_data = pd.DataFrame(np.reshape(agg_data, [-1, 2]))
                 agg_data = self.numerical_raw(agg_data, combination_dict['column1'], combination_dict['column2'])
@@ -123,7 +139,10 @@ class Transformation():
             #     wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
             #     print ("Bin by X, CNT by Y")
 
-    def three_column_groupby_logic(self, combination_dict):
+    def three_column_groupby_logic(self, combination_dict, num_column):
+        # column_name = [combination_dict['column1'], combination_dict['column2'], combination_dict['column3']]
+        # num_column_name = column_name[num_column]
+
 
         return 0
 
@@ -146,13 +165,18 @@ class Transformation():
         agg_data = []
         count = 0
         complete = False
-        for i in range(len(self.data_dict[combination_dict1]['data'])):
-            if self.data_dict[combination_dict1]['isnull'][i] == False and \
-                    self.data_dict[combination_dict2]['isnull'][i] == False:
-                count += 1
-                agg_data += [self.data_dict[combination_dict1]['data'][i],
-                             self.data_dict[combination_dict2]['data'][i]]
+        # for i in range(len(self.data_dict[combination_dict1]['data'])):
+        #     if self.data_dict[combination_dict1]['isnull'][i] == False and \
+        #             self.data_dict[combination_dict2]['isnull'][i] == False:
+        #         count += 1
+        #         agg_data += [self.data_dict[combination_dict1]['data'][i],
+        #                      self.data_dict[combination_dict2]['data'][i]]
 
+        index = np.where((1-self.data_dict[combination_dict1]['isnull']) * (1-self.data_dict[combination_dict2]['isnull']) == True)[0]
+        for i in index:
+            agg_data += [self.data_dict[combination_dict1]['data'][i],
+                             self.data_dict[combination_dict2]['data'][i]]
+            count += 1
         agg_data = pd.DataFrame(np.reshape(agg_data, [-1, 2]))
         if count > 0:
 
@@ -200,12 +224,18 @@ class Transformation():
         agg_data = []
         count = 0
 
-        for i in range(len(self.data_dict[combination_dict1]['data'])): #Null key detecting
-            if self.data_dict[combination_dict1]['isnull'][i] == False and \
-                    self.data_dict[combination_dict2]['isnull'][i] == False:
-                count += 1
-                agg_data += [self.data_dict[combination_dict1]['data'][i],
+        # for i in range(len(self.data_dict[combination_dict1]['data'])): #Null key detecting
+        #     if self.data_dict[combination_dict1]['isnull'][i] == False and \
+        #             self.data_dict[combination_dict2]['isnull'][i] == False:
+        #         count += 1
+        #         agg_data += [self.data_dict[combination_dict1]['data'][i],
+        #                      self.data_dict[combination_dict2]['data'][i]]
+
+        index = np.where((1-self.data_dict[combination_dict1]['isnull']) * (1-self.data_dict[combination_dict2]['isnull']) == True)[0]
+        for i in index:
+            agg_data += [self.data_dict[combination_dict1]['data'][i],
                              self.data_dict[combination_dict2]['data'][i]]
+            count += 1
 
         agg_data = pd.DataFrame(np.reshape(agg_data, [-1, 2]))
 
