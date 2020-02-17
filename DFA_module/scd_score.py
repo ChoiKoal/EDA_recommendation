@@ -3,85 +3,145 @@ import math
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.datasets import elec_equip as ds
 from pandas import DataFrame as df
+import pandas as pd
 
 
 
 class Special_Case_Detection():
 
-    def __init__(self, data, binUnit, null_ratio, window_year = 12, window_month = 7):
+    def __init__(self, data_dict, scenario_dict, window_year=12, window_month=28):
 
         self.window_year = window_year
         self.window_month = window_month
         self.bin_unit_year = 'Year'
         self.bin_unit_month = 'Month'
-        self.binUnit = binUnit
-        self.data = data
-        self.null_ratio = null_ratio
+        self.data_dict = data_dict
+        self.scenario_dict = scenario_dict
+
+    def get_subdimension_column(self, i):
+
+        if 'year' in self.scenario_dict[i]['X']:
+            X_name = self.scenario_dict[i]['X']
+            X_unit = 'Year'
+            X_name_sub = X_name.replace('year', 'month')
+            Y_name = self.scenario_dict[i]['Y']
+            agg_func = self.scenario_dict[i]['Agg_func_Y']
+
+            wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],
+                                    '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
+                                    '%s' % (Y_name): self.data_dict[Y_name]['data']})
+
+            if 'COUNT' in agg_func:
+                Y = wrapped.groupby(by=[X_name, X_name_sub]).count()
+            if 'SUM' in agg_func:
+                Y = wrapped.groupby(by=[X_name, X_name_sub]).sum()
+            if 'AVG' in agg_func:
+                Y = wrapped.groupby(by=[X_name, X_name_sub]).mean()
+
+            Y_shape = Y.shape[0]
+            count = 0
+            for values in Y[Y_name].values:
+                if values == 0:
+                    count += 1
+            zero_ratio = count / Y_shape
+
+        elif 'month' in self.scenario_dict[i]['X']:
+            X_name = self.scenario_dict[i]['X']
+            X_unit = 'Month'
+            X_name_sub = X_name.replace('month', 'day')
+            Y_name = self.scenario_dict[i]['Y']
+            agg_func = self.scenario_dict[i]['Agg_func_Y']
+
+            wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'], '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],'%s' % (Y_name): self.data_dict[Y_name]['data']})
+
+            if 'COUNT' in agg_func:
+                Y = wrapped.groupby(by = [X_name, X_name_sub]).count()
+            if 'SUM' in agg_func:
+                Y = wrapped.groupby(by = [X_name, X_name_sub]).sum()
+            if 'AVG' in agg_func:
+                Y = wrapped.groupby(by = [X_name, X_name_sub]).mean()
+
+            Y_shape = Y.shape[0]
+            count = 0
+            for values in Y[Y_name].values:
+                if values == 0:
+                    count += 1
+            zero_ratio = count / Y_shape
+        else:
+            Y = 0
+            X_unit = 0
+            Y_shape = 0
+            zero_ratio = 1
+
+        return Y, X_unit, Y_shape, zero_ratio
+
 
     def get_scd_Score(self):
 
-        #binUnit_temp = 'Year'
-        binUnit_temp = self.binUnit
+        for i in self.scenario_dict.keys():
+            if 'year' or 'month' in self.scenario_dict[i]['X']:
+                data, data_unit, data_size, zero_ratio = self.get_subdimension_column(i)
 
-        #data_temp = ds.load(as_pandas=True).data
-        data_temp = self.data
+                if zero_ratio >= 0.3:
+                    least_window = 0
+                if zero_ratio < 0.3:
+                    if data_unit == self.bin_unit_year:
+                        if data_size < self.window_year * 2:
+                            least_window = 0
+                        if data_size >= self.window_year * 2:
+                            # if data_temp.count(0) >= np.multiply(data_temp.shape[0], 0.1):
+                            #     least_window = 0
+                            # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
+                            least_window = 1
+                            stl = seasonal_decompose(data, model='additive', period=self.window_year)
+                    elif data_unit == self.bin_unit_month:
+                        if data_size < self.window_month * 2:
+                            least_window = 0
+                        if data_size >= self.window_month * 2:
+                            # if data_temp.count(0) >= np.multiply(data_temp.shape[0], 0.1):
+                            #     least_window = 0
+                            # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
+                            least_window = 1
+                            stl = seasonal_decompose(data, model='additive', period=self.window_month)
+                    else:
+                        print("stl window error")
 
-        if self.null_ratio >= 0.3:
-            least_window = 0
-        if self.null_ratio < 0.3:
-            if binUnit_temp == self.bin_unit_year:
-                if data_temp.shape[0] < self.window_year*2:
-                    least_window = 0
-                if data_temp.shape[0] >= self.window_year*2:
-                    # if data_temp.count(0) >= np.multiply(data_temp.shape[0], 0.1):
-                    #     least_window = 0
-                    # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
-                        least_window = 1
-                        stl = seasonal_decompose(data_temp, model='additive', period = self.window_year)
-            elif binUnit_temp == self.bin_unit_month:
-                if data_temp.shape[0] < self.window_month*2:
-                    least_window = 0
-                if data_temp.shape[0] >= self.window_month*2:
-                    # if data_temp.count(0) >= np.multiply(data_temp.shape[0], 0.1):
-                    #     least_window = 0
-                    # if data_temp.count(0) < np.multiply(data_temp.shape[0], 0.1):
-                        least_window = 1
-                        stl = seasonal_decompose(data_temp, model='additive', period = self.window_month)
+                if least_window == 0:
+                    score = 0
+                    self.scenario_dict[i]['scd_score'] = score
+                if least_window == 1:
+                    residual = stl.resid
+                    nobs = stl.nobs
+                    recent_ratio = 0.75
+                    recent_point = np.multiply(nobs, recent_ratio)
+
+                    residual_mean = np.mean(residual)
+                    residual_std = np.std(residual)
+                    residual_norm = (residual - residual_mean) / residual_std
+
+                    outlier = np.where(abs(residual_norm) > 3)
+                    score = 0
+
+                    for j in range(len(outlier[0])):
+                        if outlier[0][j] > recent_point:
+                            score_temp = math.log(
+                                math.exp(1) * (1 + (outlier[0][j] - recent_point) / (nobs - recent_point)) / 2)
+                            score += score_temp
+
+                    if score > 3:
+                        score = 3
+
+                self.scenario_dict[i]['scd_score'] = score/3
+
+                if score > 0:
+                    print(self.scenario_dict[i])
+                    # print(data, data_unit)
+
             else:
-                print("stl window error")
+                # if X is not temporal data
+                self.scenario_dict[i]['scd_score'] = 0
+                # print(self.scenario_dict[i])
 
-        '''
-        if binUnit == self.bin_unit_year:
-            stl = seasonal_decompose(data, model='additive', period = self.window_year)
-        elif binUnit == self.bin_unit_month:
-            stl = seasonal_decompose(data, model='additive', period = self.window_month)
-        else
-            print("stl window error")
-        '''
+        # return scd_score, score, least_window
+        # return scd_score
 
-        if least_window == 0:
-            score = 0
-            scd_score = 0
-        if least_window == 1:
-            residual = stl.resid
-            nobs = stl.nobs
-            recent_ratio = 0.75
-            recent_point = np.multiply(nobs, recent_ratio)
-
-            residual_mean = np.mean(residual)
-            residual_std = np.std(residual)
-            residual_norm = (residual - residual_mean)/residual_std
-
-            outlier = np.where(abs(residual_norm) > 3)
-            score = []
-
-            for i in range(len(outlier[0])):
-                if outlier[0][i] > recent_point:
-                    score_temp = math.log(math.exp(1)*(1+(outlier[0][i]-recent_point)/(nobs-recent_point))/2)
-                    score.append(score_temp)
-                else:
-                    score.append(0)
-
-            scd_score = sum(score)
-
-        return scd_score, score, least_window

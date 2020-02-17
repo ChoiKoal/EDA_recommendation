@@ -51,16 +51,10 @@ class CreateDictionary():
             if column_dic[item]["data_type"] == "num":
                 column_dic[item] = self.create_numerical_dic(column_dic[item])
             if column_dic[item]["data_type"] == "tem":
-                column_dic[item]["timestamp"] = []
                 column_dic[item]["year"] = []
                 column_dic[item]["month"] = []
                 column_dic[item]["day"] = []
                 column_dic[item] = self.create_temporal_dic(column_dic[item])
-
-                column_dic[item + " timestamp"] = {}
-                column_dic[item + " timestamp"]["data"] = column_dic[item]["timestamp"]
-                column_dic[item + " timestamp"]["data_type"] = "temp"
-
 
                 column_dic[item + " year"] = {}
                 column_dic[item + " year"]["data"] = column_dic[item]["year"]
@@ -103,7 +97,6 @@ class CreateDictionary():
         return column
 
     def create_temporal_dic(self, column):
-        column['timestamp'].append(column['data'])
         for enum in range(len(column['data'])):
             column['month'].append(int(column['data'][enum].split("/")[0]))
             column['day'].append(int(column['data'][enum].split("/")[1]))

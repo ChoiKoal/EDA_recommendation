@@ -60,13 +60,13 @@ class Transformation():
             if column_2_type == 'tem' and column_1_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed, transformed_2 = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
-<<<<<<< HEAD
-                self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
-        #return transformed, transformed_2
-=======
+# <<<<<<< HEAD
+#                 self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
+#         #return transformed, transformed_2
+# =======
                 self.scenario_dict["%d" % (self.scenario_num-2)]['m_score']  = self.calculate_match_performance_score(transformed, self.scenario_num - 2)
                 self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
->>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
+# >>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
 
     def categorical_transformation(self, combination_dict):
         if combination_dict['column_count'] == 2:
@@ -97,12 +97,12 @@ class Transformation():
             # if column_1_type == 'num' and column_2_type != 'num':
             #     wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
             #     print ("Bin by X, CNT by Y")
-<<<<<<< HEAD
-            if column_1_type == 'num' and column_2_type == 'num':
-                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
-                transformed = self.numerical_raw(wrapped, combination_dict['column1'], combination_dict['column2'])
-                # print ("Bin by X, AGG by Y")
-=======
+# <<<<<<< HEAD
+#             if column_1_type == 'num' and column_2_type == 'num':
+#                 wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
+#                 transformed = self.numerical_raw(wrapped, combination_dict['column1'], combination_dict['column2'])
+#                 # print ("Bin by X, AGG by Y")
+# =======
             count = 0
             agg_data = []
             for i in range(len(self.data_dict[combination_dict['column1']]['data'])):
@@ -120,7 +120,7 @@ class Transformation():
 
             # wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
             # transformed = self.numerical_raw(wrapped, combination_dict['column1'], combination_dict['column2'])
->>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
+# >>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
             # if column_1_type != 'num' and column_2_type == 'num':
             #     wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
             #     print ("Bin by X, CNT by Y")
@@ -228,13 +228,13 @@ class Transformation():
         if self.data_dict[picked_scenario['X']]['data_type'] == "num" and self.data_dict[picked_scenario['Y']]['data_type'] == "num":
             scatter_chart_score = self.scatter_chart_score(grouped)
             # print("Scatter Chart Score : %.4f" % scatter_chart_score)
-<<<<<<< HEAD
-        line_chart_score = self.line_chart_score(grouped)
-        # print ("Pie Chart Score : %.4f" % pie_chart_score)
-        # print ("Bar Chart Score : %.4f" % bar_chart_score)
-
-        return 0
-=======
+# <<<<<<< HEAD
+#         line_chart_score = self.line_chart_score(grouped)
+#         # print ("Pie Chart Score : %.4f" % pie_chart_score)
+#         # print ("Bar Chart Score : %.4f" % bar_chart_score)
+#
+#         return 0
+# =======
             line_chart_score = 0
         else:
             grouped = pd.Series.sort_values(grouped)
@@ -259,7 +259,7 @@ class Transformation():
             self.scenario_dict["%d" % scenario_num]["Chart_Type"] = "SCATTER_CHART"
 
         return m_score[match_index]
->>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
+# >>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
 
     def pie_chart_score(self, grouped):
         picked_scenario = self.scenario_dict["%d" % (self.scenario_num-1)]
