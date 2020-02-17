@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c4e35d4d-f009-4412-9df2-947cdd8e44c8" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/DFA_module/Create_SCD_df.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/DFA_module/scd_score.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DFA_module/create_dictionary.py" beforeDir="false" afterPath="$PROJECT_DIR$/DFA_module/create_dictionary.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DFA_module/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/DFA_module/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DFA_module/s_score.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DFA_module/transformation.py" beforeDir="false" afterPath="$PROJECT_DIR$/DFA_module/transformation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday/rec.py" beforeDir="false" afterPath="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday/rec.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday/recommendation_tmaxday.py" beforeDir="false" afterPath="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday/recommendation_tmaxday.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1XeJTDTMzHRGNkmCXVlC7F9Pb9Y" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="run.code.analysis.last.selected.profile" value="aDefault" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="EDA_recommendation" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="EDA_recommendation" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="create_dictionary" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="EDA_recommendation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DFA_module" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DFA_module/create_dictionary.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="EDA_recommendation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DFA_module" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DFA_module/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="rec" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="EDA_recommendation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/UPA_module_tmaxday/result/recommendation_tmaxday/rec.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="scd_score" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="EDA_recommendation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DFA_module" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DFA_module/scd_score.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="transformation" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="EDA_recommendation" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/DFA_module" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/DFA_module/transformation.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.transformation" />
+        <item itemvalue="Python.create_dictionary" />
+        <item itemvalue="Python.scd_score" />
+        <item itemvalue="Python.rec" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration>$USER_HOME$/.subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c4e35d4d-f009-4412-9df2-947cdd8e44c8" name="Default Changelist" comment="" />
+      <created>1581400633005</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1581400633005</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="681" y="409" width="547" height="259" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1581401825717">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="681" y="409" width="547" height="259" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581401825717" />
+    <state x="740" y="323" width="424" height="484" key="FileChooserDialogImpl" timestamp="1581402755935">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="740" y="323" width="424" height="484" key="FileChooserDialogImpl/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581402755935" />
+    <state width="937" height="287" key="GridCell.Tab.0.bottom" timestamp="1581662799176">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="937" height="287" key="GridCell.Tab.0.bottom/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581662799176" />
+    <state width="937" height="287" key="GridCell.Tab.0.center" timestamp="1581662799176">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="937" height="287" key="GridCell.Tab.0.center/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581662799176" />
+    <state width="937" height="287" key="GridCell.Tab.0.left" timestamp="1581662799176">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="937" height="287" key="GridCell.Tab.0.left/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581662799176" />
+    <state width="937" height="287" key="GridCell.Tab.0.right" timestamp="1581662799176">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="937" height="287" key="GridCell.Tab.0.right/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581662799176" />
+    <state width="1897" height="322" key="GridCell.Tab.1.bottom" timestamp="1581571633376">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1897" height="322" key="GridCell.Tab.1.bottom/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581571633376" />
+    <state width="1897" height="322" key="GridCell.Tab.1.center" timestamp="1581571633376">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1897" height="322" key="GridCell.Tab.1.center/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581571633376" />
+    <state width="1897" height="322" key="GridCell.Tab.1.left" timestamp="1581571633376">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1897" height="322" key="GridCell.Tab.1.left/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581571633376" />
+    <state width="1897" height="322" key="GridCell.Tab.1.right" timestamp="1581571633376">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state width="1897" height="322" key="GridCell.Tab.1.right/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581571633376" />
+    <state x="259" y="200" width="1416" height="730" key="SettingsEditor" timestamp="1581479346651">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="259" y="200" width="1416" height="730" key="SettingsEditor/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581479346651" />
+    <state x="67" y="350" width="1013" height="730" key="SettingsEditor/1920.0.1080.1920/67.27.1013.1053@67.27.1013.1053" timestamp="1581401629882" />
+    <state x="586" y="199" width="1013" height="708" key="dock-window-1" timestamp="1581646215472">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="586" y="199" width="1013" height="708" key="dock-window-1/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581646215472" />
+    <state x="623" y="237" key="search.everywhere.popup" timestamp="1581412246477">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="623" y="237" key="search.everywhere.popup/1920.0.1080.1920/0.27.1920.1053@0.27.1920.1053" timestamp="1581412246477" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DFA_module/main.py</url>
+          <line>36</line>
+          <option name="timeStamp" value="23" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DFA_module/main.py</url>
+          <line>39</line>
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DFA_module/main.py</url>
+          <line>28</line>
+          <option name="timeStamp" value="25" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DFA_module/main.py</url>
+          <line>31</line>
+          <option name="timeStamp" value="26" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/DFA_module/main.py</url>
+          <line>35</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
