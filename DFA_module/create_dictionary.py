@@ -105,9 +105,9 @@ class CreateDictionary():
     def create_temporal_dic(self, column):
         column['timestamp'].append(column['data'])
         for enum in range(len(column['data'])):
-            column['month'].append(column['data'][enum].split("/")[0])
-            column['day'].append(column['data'][enum].split("/")[1])
-            column['year'].append(column['data'][enum].split("/")[2])
+            column['month'].append(int(column['data'][enum].split("/")[0]))
+            column['day'].append(int(column['data'][enum].split("/")[1]))
+            column['year'].append(int(column['data'][enum].split("/")[2]))
         return column
 
     def calculate_Avg(self, column):

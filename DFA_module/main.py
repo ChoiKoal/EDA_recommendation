@@ -8,23 +8,30 @@ import csv
 from create_dictionary import CreateDictionary
 from column_combination import ColumnCombination
 from transformation import Transformation
+<<<<<<< HEAD
 from scd_score import Special_Case_Detection
 from statsmodels.datasets import elec_equip as ds
 from Create_SCD_df import CreateDataFrame
 import pandas as pd
 
+=======
+from rank import Rank
+import time
+>>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
 
 if __name__ == "__main__":
 
-    f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    f = open("./carcrash.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)
     csv_data = []
     for line in rdr:
         csv_data.append(line)
 
     f.close()
-    csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"]
+    # csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"]
+    csv_contents_type = ["cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num"]
 
+    startTime = time.time()
     #Create Column Data Dictionary
     data_dict = CreateDictionary(csv_data, csv_contents_type).initialize_dic()
 
@@ -33,9 +40,8 @@ if __name__ == "__main__":
 
     print ("Column combination Created.")
 
-    scenario_dict = {}
-    Transformation(data_dict, column_combination, scenario_dict).transformation()
 
+<<<<<<< HEAD
     # elect
     data_temp = ds.load(as_pandas=True).data
     temp_null = 0
@@ -76,6 +82,17 @@ if __name__ == "__main__":
 
 
 
+=======
+    scenario_dict = Transformation(data_dict, column_combination).transformation()
+
+    print ("Scenario dictionary created")
+
+    Rank(scenario_dict).rank()
+
+    endTime = time.time() - startTime
+
+    print (endTime)
+>>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
 
 
 
