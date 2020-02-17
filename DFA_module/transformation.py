@@ -31,12 +31,10 @@ class Transformation():
 
         m_score = []
         for key in self.scenario_dict:
-            if self.scenario_dict[key]["m_score"] > 5:
-                self.scenario_dict[key]["m_score"] = 5
+
             m_score.append(self.scenario_dict[key]["m_score"])
 
-        for key in self.scenario_dict:
-            self.scenario_dict[key]["m_score"] /= np.max(m_score)
+
 
         return self.scenario_dict
 
@@ -229,6 +227,7 @@ class Transformation():
         # print ("Bar Chart Score : %.4f" % bar_chart_score)
 
         m_score = [pie_chart_score, bar_chart_score, line_chart_score, scatter_chart_score]
+        m_score = m_score / np.max(m_score)
         match_index = np.argmax(m_score)
         if match_index == 0:
             self.scenario_dict["%d" % scenario_num]["Chart_Type"] = "PIE_CHART"
