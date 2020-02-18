@@ -60,6 +60,7 @@ class CreateDictionary():
                 column_dic[item + " year"]["data"] = column_dic[item]["year"]
                 column_dic[item + " year"]["data_type"] = "tem"
                 column_dic[item + " year"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " year"]["isnull"] = column_dic[item]["isnull"]
                 column_dic[item + " year"]["distinct_enum"] = len(Counter(column_dic[item + " year"]["data"]))
                 column_dic[item + " year"]["hierarchy"] = 0
 
@@ -67,6 +68,7 @@ class CreateDictionary():
                 column_dic[item + " month"]["data"] = column_dic[item]["month"]
                 column_dic[item + " month"]["data_type"] = "tem"
                 column_dic[item + " month"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " month"]["isnull"] = column_dic[item]["isnull"]
                 column_dic[item + " month"]["distinct_enum"] = len(Counter(column_dic[item + " month"]["data"]))
                 column_dic[item + " month"]["hierarchy"] = 1
 
@@ -74,6 +76,7 @@ class CreateDictionary():
                 column_dic[item + " day"]["data"] = column_dic[item]["day"]
                 column_dic[item + " day"]["data_type"] = "tem"
                 column_dic[item + " day"]["enum"] = column_dic[item]["enum"]
+                column_dic[item + " day"]["isnull"] = column_dic[item]["isnull"]
                 column_dic[item + " day"]["distinct_enum"] = len(Counter(column_dic[item + " day"]["data"]))
                 column_dic[item + " day"]["hierarchy"] = 2
 
@@ -97,10 +100,19 @@ class CreateDictionary():
         return column
 
     def create_temporal_dic(self, column):
+        # for enum in range(len(column['data'])):
+        #     column['month'].append(int(column['data'][enum].split("/")[0]))
+        #     column['day'].append(int(column['data'][enum].split("/")[1]))
+        #     column['year'].append(int(column['data'][enum].split("/")[2]))
         for enum in range(len(column['data'])):
-            column['month'].append(int(column['data'][enum].split("/")[0]))
-            column['day'].append(int(column['data'][enum].split("/")[1]))
-            column['year'].append(int(column['data'][enum].split("/")[2]))
+            if column['isnull'][enum] != True:
+                column['year'].append(int(column['data'][enum].split(".")[0]))
+                column['month'].append(int(column['data'][enum].split(".")[1]))
+                column['day'].append(int(column['data'][enum].split(".")[2]))
+            else:
+                column['year'].append(0)
+                column['month'].append(0)
+                column['day'].append(0)
         return column
 
     def calculate_Avg(self, column):
