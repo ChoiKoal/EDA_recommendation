@@ -28,5 +28,12 @@ class Rank():
             picked_scenario_agg_X = self.scenario_dict["%d" %item]['Agg_func_X']
             picked_scenario_agg_Y = self.scenario_dict["%d" % item]['Agg_func_Y']
             picked_scenario_chart_type = self.scenario_dict["%d" % item]['Chart_Type']
+            if self.scenario_dict["%d" % item]['3column'] == False:
+                print ("Scenario %d : Dimension: %s %s , Measure: %s %s , \n Chart Type: %s , Scenario_score: %.4f \n"
+                       %(item, picked_scenario_agg_X, picked_scenario_X, picked_scenario_agg_Y, picked_scenario_Y, picked_scenario_chart_type, self.score[item]))
 
-            print ("Scenario %d : Dimension: %s %s , Measure: %s %s , \n Chart Type: %s , Scenario_score: %.4f \n" %(item, picked_scenario_agg_X, picked_scenario_X, picked_scenario_agg_Y, picked_scenario_Y, picked_scenario_chart_type, self.score[item]))
+            else:
+                picked_scenario_X2 = self.scenario_dict["%d" %item]['X2']
+                picked_scenario_agg_X2 = self.scenario_dict["%d" %item]['Agg_func_X2']
+                print ("Scenario %d : Dimension: %s %s %s %s , Measure: %s %s , \n Chart Type: %s , Scenario_score: %.4f \n"
+                       %(item, picked_scenario_agg_X, picked_scenario_X, picked_scenario_agg_X2, picked_scenario_X2, picked_scenario_agg_Y, picked_scenario_Y, picked_scenario_chart_type, self.score[item]))

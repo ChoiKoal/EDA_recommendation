@@ -13,7 +13,7 @@ import time
 
 if __name__ == "__main__":
 
-    f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    # f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
     f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)
@@ -30,6 +30,8 @@ if __name__ == "__main__":
     #Create Column Data Dictionary
     data_dict = CreateDictionary(csv_data, csv_contents_type).initialize_dic()
     runtime = time.time()
+
+    del csv_data
     print ("Runtime : %.4f" % (runtime-startTime))
 
     #Create Column Combination
