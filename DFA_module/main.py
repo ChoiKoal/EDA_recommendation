@@ -22,9 +22,10 @@ import time
 if __name__ == "__main__":
 
 
-    f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    # f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
     f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
+    # f = open("./traffic_accident.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)
     csv_data = []
     for line in rdr:
@@ -35,6 +36,7 @@ if __name__ == "__main__":
     # csv_contents_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"] #tmaxday
     csv_contents_type = ["cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "tem", "tem", "num", "cat", "num", "num", "num", "cat"]  #tmax_raw_data_set
     # csv_contents_type = ["cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num"] #carcrash
+    # csv_contents_type = ["cat", "tem", "cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num", "num", "num"]
 
 
     startTime = time.time()

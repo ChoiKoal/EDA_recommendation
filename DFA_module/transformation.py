@@ -338,6 +338,8 @@ class Transformation():
             score = 0
         if picked_scenario["Agg_func_Y"] == "avg":
             score = 0
+        if score > 1.0:
+            score = 1.0
         return score
 
     def bar_chart_score(self, grouped):
@@ -347,9 +349,9 @@ class Transformation():
         if distinct_enum_X == 1:
             score = 0
         if distinct_enum_X >= 2 and distinct_enum_X <= 20:
-            score = 1.5
+            score = 10
         if distinct_enum_X > 20:
-            score = 30 / distinct_enum_X
+            score = 20 / distinct_enum_X
         return score
 
     def scatter_chart_score(self, grouped):
