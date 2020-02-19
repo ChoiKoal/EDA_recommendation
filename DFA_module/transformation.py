@@ -108,11 +108,11 @@ class Transformation():
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
             # wrapped = self.pandas_container(combination_dict)
-            if column_1_type == 'cat' and column_2_type == 'cat':
-                wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
-                transformed, complete = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
-                if complete == True:
-                    self.calculate_match_performance_score(transformed, self.scenario_num - 1)
+            # if column_1_type == 'cat' and column_2_type == 'cat':
+            #     wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
+            #     transformed, complete = self.groupby_count(wrapped, combination_dict['column1'], combination_dict['column2'])
+            #     if complete == True:
+            #         self.calculate_match_performance_score(transformed, self.scenario_num - 1)
 
             if column_1_type == 'cat' and column_2_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
@@ -337,21 +337,36 @@ class Transformation():
 
 
 
-    def calculate_match_performance_score(self, grouped, scenario_num):  # View :
+    def calculate_match_performance_score(self, grouped, scenario_num):  # boonkicheori
         picked_scenario = self.scenario_dict["%d" % scenario_num]
-        pie_chart_score = self.pie_chart_score(grouped)
-        bar_chart_score = self.bar_chart_score(grouped)
+
+        pie_chart_score = 0
+        bar_chart_score = 0
+        scatter_chart_score = 0
+        line_chart_score = 0
         if self.data_dict[picked_scenario['X']]['data_type'] == "num" and self.data_dict[picked_scenario['Y']]['data_type'] == "num":
             scatter_chart_score = self.scatter_chart_score(grouped)
             # print("Scatter Chart Score : %.4f" % scatter_chart_score)
-            line_chart_score = 0
-        else:
+
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "tem" and picked_scenario['3column'] == True:
+            if len(grouped) > 7:
+                line_chart_score = 3
+            else:
+                bar_chart_score = 3
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "cat" and picked_scenario['3column'] == True:
+            bar_chart_score = 3
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "cat" and len(grouped) < 20:
             grouped = pd.Series.sort_values(grouped)
             if self.data_dict[picked_scenario['X']]['data_type'] == "tem":
                 grouped = pd.Series.sort_index(grouped)
+            bar_chart_score = self.bar_chart_score(grouped)
             line_chart_score = self.line_chart_score(grouped)
-            # print("Line Chart Score : %.4f" % line_chart_score)
-            scatter_chart_score = 0
+            pie_chart_score = self.pie_chart_score(grouped)
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "tem" and len(grouped) < 13:
+            bar_chart_score = self.bar_chart_score(grouped)
+            pie_chart_score = self.pie_chart_score(grouped)
+
+
         # print ("Pie Chart Score : %.4f" % pie_chart_score)
         # print ("Bar Chart Score : %.4f" % bar_chart_score)
 
@@ -366,18 +381,18 @@ class Transformation():
         picked_scenario = self.scenario_dict["%d" % (self.scenario_num-1)]
         distinct_enum_X = self.data_dict[picked_scenario["X"]]['distinct_enum']
         score = 0
-        if distinct_enum_X >= 2 and distinct_enum_X <= 8:
-            score += self.calculate_entropy(self.data_dict[picked_scenario["Y"]]) / 8
-        elif distinct_enum_X > 8:
-            score += 4 * (self.calculate_entropy(self.data_dict[picked_scenario["Y"]])) / distinct_enum_X
-        elif min(grouped) < 0:
+        if min(grouped) < 0:
             score = 0
         elif distinct_enum_X == 1:
             score = 0
         elif picked_scenario["Agg_func_Y"] == "avg":
             score = 0
-        if score > 5:
-            score = 5
+        elif distinct_enum_X >= 2 and distinct_enum_X <= 8:
+            score += self.calculate_entropy(self.data_dict[picked_scenario["Y"]]) / 8
+        elif distinct_enum_X > 8:
+            score += 4 * (self.calculate_entropy(self.data_dict[picked_scenario["Y"]])) / distinct_enum_X
+        if score > 3:
+            score = 3
         return score
 
     def bar_chart_score(self, grouped):
@@ -386,14 +401,14 @@ class Transformation():
         score = 0
         if distinct_enum_X == 1:
             score = 0
-        if distinct_enum_X >= 2 and distinct_enum_X <= 20:
-            score = 1.5
-        if distinct_enum_X > 20:
-            score = 20 / distinct_enum_X
+        elif distinct_enum_X >= 2 and distinct_enum_X <= 20:
+            score = 3
+        elif distinct_enum_X > 20:
+            score = 40 / distinct_enum_X
         return score
 
     def scatter_chart_score(self, grouped):
-        score = np.abs(np.corrcoef(grouped.keys(), grouped.values)[0][1]) *1.5
+        score = np.abs(np.corrcoef(grouped.keys(), grouped.values)[0][1]) *3
         return score
 
     def line_chart_score(self, grouped):
@@ -408,7 +423,7 @@ class Transformation():
 
         final_score = np.max(score)
         if final_score > 0.3:
-            line_score = 1.5
+            line_score = 3
         return line_score
 
 
