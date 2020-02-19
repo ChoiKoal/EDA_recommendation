@@ -4,7 +4,6 @@ from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.datasets import elec_equip as ds
 from pandas import DataFrame as df
 import pandas as pd
-from matplotlib import pyplot as plt
 
 
 
@@ -41,14 +40,14 @@ class Special_Case_Detection():
             if 'AVG' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name, X_name_sub]).mean()
 
-
+            # del wrong date key
             for key_year, key_month in Y_temp[Y_name].keys():
                 if key_year == 0 or key_month == 0:
                     del Y_temp[Y_name][key_year, key_month]
 
             keys_temp, keys_min, keys_max = self.date_key_generation(Y_temp[Y_name], X_unit)
 
-
+            # adding empty date key
             for k1, k2 in keys_temp:
                 if not(k1,k2) in Y_temp[Y_name].keys():
                     Y_temp[Y_name][k1,k2] = 0
@@ -77,7 +76,7 @@ class Special_Case_Detection():
                                     '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
                                     '%s' % (Y_name): self.data_dict[Y_name]['data']})
 
-            print("scenario %s" % i, "*******************")
+            # print("scenario %s" % i, "*******************")
 
             if 'COUNT' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name_sup, X_name, X_name_sub]).count()
@@ -86,13 +85,15 @@ class Special_Case_Detection():
             if 'AVG' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name_sup, X_name, X_name_sub]).mean()
 
-
+            # del wrong date key
             for key_year, key_month, key_day in Y_temp[Y_name].keys():
                 if key_year == 0 or key_month == 0 or key_day == 0:
                     del Y_temp[Y_name][key_year, key_month, key_day]
 
             keys_temp, keys_min, keys_max = self.date_key_generation(Y_temp[Y_name], X_unit)
 
+
+            # adding empty date key
             for k1, k2, k3 in keys_temp:
                 if not (k1, k2, k3) in Y_temp[Y_name].keys():
                     Y_temp[Y_name][k1, k2, k3] = 0
@@ -109,6 +110,8 @@ class Special_Case_Detection():
                     del Y_add[Y_name][key_year, key_month, key_day]
 
             Y = pd.DataFrame(Y_add[Y_name])
+
+            # only for group by month
             '''
             wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],
                                     '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
@@ -162,7 +165,7 @@ class Special_Case_Detection():
             zero_ratio = count / Y_shape
 
             # print(Y)
-            print(zero_ratio)
+            # print(zero_ratio)
 
         else:
             Y = 0
@@ -251,16 +254,16 @@ class Special_Case_Detection():
 
         if X_unit == 'Year':
 
-            for key_year, key_month in grouped.keys():
-                if key_year == 0 or key_month == 0:
-                    del grouped[key_year, key_month]
-
             key_year_min, key_month_min = min(grouped.keys())
             keys_min = min(grouped.keys())
             key_year_max, key_month_max = max(grouped.keys())
             keys_max = max(grouped.keys())
 
             keys_temp = []
+
+            # print(key_year_min, key_month_min)
+            # print(key_year_max, key_month_max)
+
             for temp_month in range(key_year_max - key_year_min + 1):
                 if temp_month == 0:
                     for temp_day in range(13 - key_month_min):
@@ -274,10 +277,6 @@ class Special_Case_Detection():
 
         elif X_unit == 'Month':
 
-            for key_year, key_month, key_day in grouped.keys():
-                if key_year == 0 or key_month == 0 or key_day == 0:
-                    del grouped[key_year, key_month, key_day]
-
             key_year_min, key_month_min, key_day_min = min(grouped.keys())
             keys_min = min(grouped.keys())
             key_year_max, key_month_max, key_day_max = max(grouped.keys())
@@ -286,7 +285,8 @@ class Special_Case_Detection():
             keys_temp = []
             month_size = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
-            print(key_year_max, key_month_max, key_day_max)
+            # print(key_year_min, key_month_min, key_day_min)
+            # print(key_year_max, key_month_max, key_day_max)
 
             for temp_year in range(key_year_max - key_year_min + 1):
                 if temp_year == 0 and key_year_max == key_year_min:
