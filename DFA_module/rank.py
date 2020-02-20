@@ -1,21 +1,20 @@
 import numpy as np
-import scipy.stats
-import scipy.spatial
-import random
-import math
-import sys
-import csv
-import pandas as pd
-from collections import Counter, defaultdict
 
 class Rank():
     def __init__(self, scenario_dict):
+        """
+        :param scenario_dict: created scenario dictionary
+        """
         self.scenario_dict = scenario_dict
         self.score = []
 
     def rank(self):
+        """
+        calculate scenario ranking and pick top N scenario
+        :return: picked scenario
+        """
         for key in self.scenario_dict:
-            scenario_score = 0.5 * self.scenario_dict[key]['transform_score'] + self.scenario_dict[key]['m_score']
+            scenario_score = 0.1 * self.scenario_dict[key]['transform_score'] + self.scenario_dict[key]['m_score']
             self.score.append(scenario_score)
 
         top_10 = np.array(self.score).argsort()[-20:]

@@ -1,11 +1,5 @@
 import numpy as np
-import scipy.stats
-import scipy.spatial
-import random
-import math
-import sys
-import csv
-from collections import Counter, defaultdict
+from collections import Counter
 
 class CreateDictionary():
     def __init__(self, csv_data, data_type_meta):
@@ -50,6 +44,7 @@ class CreateDictionary():
 
             if column_dic[item]["data_type"] == "num":
                 column_dic[item] = self.create_numerical_dic(column_dic[item])
+
             if column_dic[item]["data_type"] == "tem":
                 column_dic[item]["year"] = []
                 column_dic[item]["month"] = []
@@ -94,6 +89,12 @@ class CreateDictionary():
         return column_dic
 
     def create_numerical_dic(self, column):
+        """
+        get statistical meta info
+        :param column:
+        column: numerical column
+        :return: column
+        """
         for i in range(len(column["data"])):
             if column["data"][i] == "":
                 column["isnull"][i] = True
@@ -107,6 +108,14 @@ class CreateDictionary():
         return column
 
     def create_temporal_dic(self, column):
+        """
+        get temporal data meta
+        parsing with delimeter (global rule : "-")
+        Y, D, M : type casting to int
+        Y+M : str type
+        :param column: temporal column
+        :return: column
+        """
         # for enum in range(len(column['data'])):
         #     if column['isnull'][enum] != True:
         #         column['month'].append(int(column['data'][enum].split("/")[0]))
@@ -116,13 +125,12 @@ class CreateDictionary():
         #         column['year'].append(0)
         #         column['month'].append(0)
         #         column['day'].append(0)
-
         for enum in range(len(column['data'])):
             if column['isnull'][enum] != True:
                 column['year'].append(int(column['data'][enum].split(".")[0]))
                 column['month'].append(int(column['data'][enum].split(".")[1]))
                 column['day'].append(int(column['data'][enum].split(".")[2]))
-                column['Y+M'].append(column['data'][enum].split(".")[0] + " " + column['data'][enum].split(".")[1])
+                column['Y+M'].append(column['data'][enum].split(".")[0] + " " + column['data'][enum].split("-")[1])
             else:
                 column['year'].append(0)
                 column['month'].append(0)
@@ -130,6 +138,19 @@ class CreateDictionary():
                 column['Y+M'].append(0)
 
         return column
+        # for enum in range(len(column['data'])):
+        #     if column['isnull'][enum] != True:
+        #         column['year'].append(int(column['data'][enum].split(".")[0]))
+        #         column['month'].append(int(column['data'][enum].split(".")[1]))
+        #         column['day'].append(int(column['data'][enum].split(".")[2]))
+        #         column['Y+M'].append(column['data'][enum].split(".")[0] + " " + column['data'][enum].split(".")[1])
+        #     else:
+        #         column['year'].append(0)
+        #         column['month'].append(0)
+        #         column['day'].append(0)
+        #         column['Y+M'].append(0)
+        #
+        # return column
 
     def calculate_Avg(self, column):
         """
@@ -142,6 +163,11 @@ class CreateDictionary():
         return avg
 
     def create_nonzero_column(self, column):
+        """
+        create nonzero column for calculate statistical info
+        :param column: column
+        :return: nonzero column
+        """
         nonzero_index = np.nonzero(column)
         nonzero_column = []
         for item in nonzero_index:

@@ -1,15 +1,16 @@
 import numpy as np
-import scipy.stats
-import scipy.spatial
-import random
 import math
-import sys
-import csv
 import pandas as pd
-from collections import Counter, defaultdict
+from collections import Counter
 
 class Transformation():
     def __init__(self, data_dict, combination_dict):
+        """
+        :param data_dict: data dictionary created by CLASS CreateDictionary
+        :param combination_dict: combination dictionary created by CLASS ColumnCombination
+        :param scenario_dict: scenario dictionary (scenario, X, X_agg, Y, Y_agg, transformation_score, m_score)
+        :param agg_func: supporting aggregation function
+        """
         self.data_dict = data_dict
         self.combination_dict = combination_dict
         self.scenario_dict = {}
@@ -17,6 +18,12 @@ class Transformation():
         self.agg_func = ["sum", "avg"]
 
     def transformation(self):
+        """
+        decide which algorithm to be used with the meta info of combination_dict and data_dict
+        after transformation, calculate m_score, normalize and pick the right visualization
+        also, create scenario dictionary with metas
+        :return: scenario dict
+        """
         for key in self.combination_dict.keys():
             if self.combination_dict[key]['column_count'] == 2:
                 if self.data_dict[self.combination_dict[key]['column1']]['data_type'] == 'tem' or self.data_dict[self.combination_dict[key]['column2']]['data_type'] == 'tem':
@@ -74,6 +81,13 @@ class Transformation():
 
 
     def temporal_transformation(self, combination_dict):
+        """
+        if one of the column is temporal data column
+        tem + cat -> GroupBy tem Count cat
+        tem + num -> GroupBy tem Agg num
+        :param combination_dict: picked combination
+        :return: created scenario_dict
+        """
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
@@ -83,27 +97,33 @@ class Transformation():
                 if complete == True:
                     self.calculate_match_performance_score(transformed, self.scenario_num - 1)
 
-            if column_1_type == 'tem' and column_2_type == 'num':
+            elif column_1_type == 'tem' and column_2_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
                 transformed, complete = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
                 if complete == True:
                     self.calculate_match_performance_score(transformed, self.scenario_num-1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
-            if column_2_type == 'tem' and column_1_type == 'cat':
+            elif column_2_type == 'tem' and column_1_type == 'cat':
                 wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed, complete = self.groupby_count(wrapped, combination_dict['column2'], combination_dict['column1'])
                 if complete == True:
                     self.calculate_match_performance_score(transformed, self.scenario_num - 1)
 
-            if column_2_type == 'tem' and column_1_type == 'num':
+            elif column_2_type == 'tem' and column_1_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
                 transformed, complete = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
                 if complete == True:
                     self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed, self.scenario_num - 1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
-    def categorical_transformation(self, combination_dict):
+    def categorical_transformation(self, combination_dict, three_column = False):
+        """
+        if one of the column is categorical data column
+        cat + num -> GroupBy cat Agg num
+        :param combination_dict: picked combination
+        :return: created scenario_dict
+        """
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
@@ -116,19 +136,25 @@ class Transformation():
 
             if column_1_type == 'cat' and column_2_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column1'], combination_dict['column2'])
-                transformed, complete = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'])
+                transformed, complete = self.groupby_agg(wrapped, combination_dict['column1'], combination_dict['column2'], three_column)
                 if complete == True:
                     self.calculate_match_performance_score(transformed, self.scenario_num - 1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
             if column_2_type == 'cat' and column_1_type == 'num':
                 wrapped = self.pandas_container(combination_dict['column2'], combination_dict['column1'])
-                transformed, complete = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
+                transformed, complete = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'], three_column)
                 if complete == True:
                     self.calculate_match_performance_score(transformed, self.scenario_num - 1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
     def numerical_transformation(self, combination_dict):
+        """
+        if all columns are numerical column
+        num + num -> raw data + scatter
+        :param combination_dict: picked combination
+        :return: created scenario_dict
+        """
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']
@@ -163,6 +189,14 @@ class Transformation():
             #     print ("Bin by X, CNT by Y")
 
     def three_column_groupby_logic(self, combination_dict, num_column):
+        """
+        special rules for 3+ column combination
+        Group temoral and categorical columns and make it as one column
+        Make it 2 column combination and go to categorical_transformation
+        :param combination_dict: picked combination
+        :param num_column: numerical column index
+        :return: created scenario_dict
+        """
         column_name = [combination_dict['column1'], combination_dict['column2'], combination_dict['column3']]
         num_column_name = column_name[num_column[0]]
 
@@ -189,7 +223,8 @@ class Transformation():
             combination_dict_new['column1'] = comb_column_name
             combination_dict_new['column2'] = num_column_name
             combination_dict_new['column_count'] = 2
-            self.categorical_transformation(combination_dict_new)
+            three_column = True
+            self.categorical_transformation(combination_dict_new, three_column)
             self.scenario_dict["%s" % (self.scenario_num-1)]['transform'] = "GROUPBY %s GROUPBY %s Agg(sum) %s" %(column_name[0], column_name[1], num_column_name)
             self.scenario_dict["%s" % (self.scenario_num-1)]['X'] = column_name[0]
             self.scenario_dict["%s" % (self.scenario_num-1)]['X2'] = column_name[1]
@@ -201,6 +236,12 @@ class Transformation():
 
 
     def pandas_container(self, column1, column2):
+        """
+        make pandas container to use agg function
+        :param column1
+        :param column2
+        :return:
+        """
 
         column_1_name = column1
         column_2_name = column2
@@ -214,6 +255,12 @@ class Transformation():
         return wrapped_data
 
     def groupby_count(self, dataframe, combination_dict1, combination_dict2):
+        """
+        GroupBy + Count
+        :param combination_dict1: first column in combination_dict
+        :param combination_dict2: second column in combination_dict
+        :return:
+        """
 
         agg_data = []
         count = 0
@@ -255,7 +302,14 @@ class Transformation():
 
 
 
-    def groupby_agg(self, dataframe, combination_dict1, combination_dict2):
+    def groupby_agg(self, dataframe, combination_dict1, combination_dict2, three_column = False):
+        """
+        GroupBy + Agg
+        :param combination_dict1: first column in combination_dict
+        :param combination_dict2: second column in combination_dict
+        :param three_column: whether its three column case or not
+        :return:
+        """
 
         # grouped_sum = dataframe['column2'].groupby(dataframe['column1']).sum()
         # grouped_sum = pd.Series.sort_values(grouped_sum)
@@ -299,7 +353,7 @@ class Transformation():
             transform_scenario["Agg_func_Y"] = "SUM"
             transform_scenario["transform_score"] = self.calculate_transformation_score(agg_data, combination_dict2)
             transform_scenario["scenario_num"] = self.scenario_num
-            transform_scenario["3column"] = False
+            transform_scenario["3column"] = three_column
 
             self.scenario_dict["%d" %self.scenario_num] = transform_scenario
 
@@ -311,6 +365,13 @@ class Transformation():
 
 
     def numerical_raw(self, dataframe, combination_dict1, combination_dict2):
+        """
+        make numerical column container
+        :param dataframe: pandas dataframed data
+        :param combination_dict1: first column in combination_dict
+        :param combination_dict2: second column in combination_dict
+        :return:
+        """
         grouped = pd.Series(dataframe[1].values, index=dataframe[0].values)
         grouped = pd.Series.sort_values(grouped)
         transform_scenario = {}
@@ -330,6 +391,12 @@ class Transformation():
         return grouped
 
     def calculate_transformation_score(self, aggregated, measure):
+        """
+        calculate transformation score Q = 1 - |X'|/|X|
+        :param aggregated: aggregated data
+        :param measure: original data
+        :return:
+        """
         original_data_count = self.data_dict[measure]["distinct_enum"]
         aggregated_data_count = len(aggregated)
         score = 1 - aggregated_data_count/original_data_count
@@ -337,7 +404,13 @@ class Transformation():
 
 
 
-    def calculate_match_performance_score(self, grouped, scenario_num):  # boonkicheori
+    def calculate_match_performance_score(self, grouped, scenario_num):
+        """
+        Rule-based scoring for visualization match performance
+        :param grouped: aggregated data
+        :param scenario_num
+        :return:
+        """
         picked_scenario = self.scenario_dict["%d" % scenario_num]
 
         pie_chart_score = 0
@@ -350,21 +423,24 @@ class Transformation():
 
         elif self.data_dict[picked_scenario['X']]['data_type'] == "tem" and picked_scenario['3column'] == True:
             if len(grouped) > 7:
-                line_chart_score = 3
+                line_chart_score = self.line_chart_score(grouped)
             else:
-                bar_chart_score = 3
+                bar_chart_score = self.bar_chart_score(grouped)
         elif self.data_dict[picked_scenario['X']]['data_type'] == "cat" and picked_scenario['3column'] == True:
-            bar_chart_score = 3
-        elif self.data_dict[picked_scenario['X']]['data_type'] == "cat" and len(grouped) < 20:
+            bar_chart_score = self.bar_chart_score(grouped)
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "cat" and len(grouped) < 20 and picked_scenario['3column'] == False:
             grouped = pd.Series.sort_values(grouped)
-            if self.data_dict[picked_scenario['X']]['data_type'] == "tem":
-                grouped = pd.Series.sort_index(grouped)
+            # if self.data_dict[picked_scenario['X']]['data_type'] == "tem":
+            #     grouped = pd.Series.sort_index(grouped)
             bar_chart_score = self.bar_chart_score(grouped)
             line_chart_score = self.line_chart_score(grouped)
-            pie_chart_score = self.pie_chart_score(grouped)
-        elif self.data_dict[picked_scenario['X']]['data_type'] == "tem" and len(grouped) < 13:
-            bar_chart_score = self.bar_chart_score(grouped)
-            pie_chart_score = self.pie_chart_score(grouped)
+            if len(grouped) < 6:
+                pie_chart_score = self.pie_chart_score(grouped)
+        elif self.data_dict[picked_scenario['X']]['data_type'] == "tem" and picked_scenario['3column'] == False:
+            if len(grouped) > 7:
+                line_chart_score = self.line_chart_score(grouped)
+            else:
+                bar_chart_score = self.bar_chart_score(grouped)
 
 
         # print ("Pie Chart Score : %.4f" % pie_chart_score)
@@ -378,6 +454,10 @@ class Transformation():
 
 
     def pie_chart_score(self, grouped):
+        """
+        calculate Match Performance Score between Data and Pie chart
+        :return: m_score_pie
+        """
         picked_scenario = self.scenario_dict["%d" % (self.scenario_num-1)]
         distinct_enum_X = self.data_dict[picked_scenario["X"]]['distinct_enum']
         score = 0
@@ -396,6 +476,10 @@ class Transformation():
         return score
 
     def bar_chart_score(self, grouped):
+        """
+        calculate Match Performance Score between Data and Bar chart
+        :return: m_score_bar
+        """
         picked_scenario = self.scenario_dict["%d" % (self.scenario_num-1)]
         distinct_enum_X = self.data_dict[picked_scenario["X"]]['distinct_enum']
         score = 0
@@ -408,10 +492,20 @@ class Transformation():
         return score
 
     def scatter_chart_score(self, grouped):
-        score = np.abs(np.corrcoef(grouped.keys(), grouped.values)[0][1]) *3
+        """
+        calculate Match Performance Score between Data and Scatter chart
+        :return: m_score_scatter
+        """
+        score = np.abs(np.corrcoef(grouped.keys(), grouped.values)[0][1])
+        if score > 0.3:
+            score = 3
         return score
 
     def line_chart_score(self, grouped):
+        """
+        calculate Match Performance Score between Data and Line chart
+        :return: m_score_line
+        """
         keys = []
         score = []
         line_score = 0
