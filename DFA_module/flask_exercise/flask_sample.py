@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, make_response
-import json_length
+import DFA_module
 
 app = Flask(__name__)
 
@@ -14,7 +14,7 @@ def json_sample():
 
         req = request.get_json() #json to dict
 
-        length = json_length.json_length(req)
+        length = DFA_module.DFA_module(req)
 
         response_body = {
             "original json": req,
