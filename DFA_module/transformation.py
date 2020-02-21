@@ -68,13 +68,13 @@ class Transformation():
         match_index = np.argmax(m_score, axis = 0)
         for key in self.scenario_dict:
             if match_index[int(key)] == 0:
-                self.scenario_dict[key]["Chart_Type"] = "PIE_CHART"
+                self.scenario_dict[key]["Chart_Type"] = "pie"
             if match_index[int(key)] == 1:
-                self.scenario_dict[key]["Chart_Type"] = "BAR_CHART"
+                self.scenario_dict[key]["Chart_Type"] = "bar"
             if match_index[int(key)] == 2:
-                self.scenario_dict[key]["Chart_Type"] = "LINE_CHART"
+                self.scenario_dict[key]["Chart_Type"] = "line"
             if match_index[int(key)] == 3:
-                self.scenario_dict[key]["Chart_Type"] = "SCATTER_CHART"
+                self.scenario_dict[key]["Chart_Type"] = "scatter"
             self.scenario_dict[key]["m_score"] = m_score[match_index[int(key)]][int(key)]
 
         return self.scenario_dict

@@ -17,11 +17,15 @@ class Rank():
             scenario_score = 0.1 * self.scenario_dict[key]['transform_score'] + self.scenario_dict[key]['m_score']
             self.score.append(scenario_score)
 
-        top_10 = np.array(self.score).argsort()[-20:]
+        top_10 = np.array(self.score).argsort()[-10:]
         top_10 = top_10[::-1]
         print("Top 100 Scenario")
 
+        picked_scenario = {}
+        i = 0
         for item in top_10:
+            i += 1
+            picked_scenario["%d" %i] = self.scenario_dict["%d" %item]
             picked_scenario_X = self.scenario_dict["%d" %item]['X']
             picked_scenario_Y = self.scenario_dict["%d" %item]['Y']
             picked_scenario_agg_X = self.scenario_dict["%d" %item]['Agg_func_X']
@@ -36,3 +40,4 @@ class Rank():
                 picked_scenario_agg_X2 = self.scenario_dict["%d" %item]['Agg_func_X2']
                 print ("Scenario %d : Dimension: %s %s %s %s , Measure: %s %s , \n Chart Type: %s , Scenario_score: %.4f \n"
                        %(item, picked_scenario_agg_X, picked_scenario_X, picked_scenario_agg_X2, picked_scenario_X2, picked_scenario_agg_Y, picked_scenario_Y, picked_scenario_chart_type, self.score[item]))
+        return picked_scenario
