@@ -52,31 +52,6 @@ class CreateDictionary():
                 column_dic[item]["Y+M"] = []
                 column_dic[item] = self.create_temporal_dic(column_dic[item])
 
-<<<<<<< HEAD
-                column_dic[item + " year"] = {}
-                column_dic[item + " year"]["data"] = column_dic[item]["year"]
-                column_dic[item + " year"]["data_type"] = "tem"
-                column_dic[item + " year"]["enum"] = column_dic[item]["enum"]
-                column_dic[item + " year"]["isnull"] = column_dic[item]["isnull"]
-                column_dic[item + " year"]["distinct_enum"] = len(Counter(column_dic[item + " year"]["data"]))
-                column_dic[item + " year"]["hierarchy"] = 0
-
-                column_dic[item + " month"] = {}
-                column_dic[item + " month"]["data"] = column_dic[item]["month"]
-                column_dic[item + " month"]["data_type"] = "tem"
-                column_dic[item + " month"]["enum"] = column_dic[item]["enum"]
-                column_dic[item + " month"]["isnull"] = column_dic[item]["isnull"]
-                column_dic[item + " month"]["distinct_enum"] = len(Counter(column_dic[item + " month"]["data"]))
-                column_dic[item + " month"]["hierarchy"] = 1
-
-                column_dic[item + " day"] = {}
-                column_dic[item + " day"]["data"] = column_dic[item]["day"]
-                column_dic[item + " day"]["data_type"] = "tem"
-                column_dic[item + " day"]["enum"] = column_dic[item]["enum"]
-                column_dic[item + " day"]["isnull"] = column_dic[item]["isnull"]
-                column_dic[item + " day"]["distinct_enum"] = len(Counter(column_dic[item + " day"]["data"]))
-                column_dic[item + " day"]["hierarchy"] = 2
-=======
                 column_dic[item + ",year"] = {}
                 column_dic[item + ",year"]["data"] = column_dic[item]["year"]
                 column_dic[item + ",year"]["data_type"] = "tem"
@@ -106,7 +81,6 @@ class CreateDictionary():
                 column_dic[item + ",Y+M"]["isnull"] = column_dic[item]["isnull"]
                 column_dic[item + ",Y+M"]["distinct_enum"] = len(Counter(column_dic[item + ",Y+M"]["data"]))
 
->>>>>>> cb1e16d2eb200b0100594a43c5b21bccc0ce6965
 
                 del column_dic[item]
             count += 1

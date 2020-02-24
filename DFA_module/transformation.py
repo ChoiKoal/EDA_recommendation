@@ -118,10 +118,7 @@ class Transformation():
                     self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed, self.scenario_num - 1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
-<<<<<<< HEAD
 
-    def categorical_transformation(self, combination_dict):
-=======
     def categorical_transformation(self, combination_dict, three_column = False):
         """
         if one of the column is categorical data column
@@ -129,7 +126,6 @@ class Transformation():
         :param combination_dict: picked combination
         :return: created scenario_dict
         """
->>>>>>> cb1e16d2eb200b0100594a43c5b21bccc0ce6965
         if combination_dict['column_count'] == 2:
             column_1_type = self.data_dict[combination_dict['column1']]['data_type']
             column_2_type = self.data_dict[combination_dict['column2']]['data_type']

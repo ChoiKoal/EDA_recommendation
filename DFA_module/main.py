@@ -8,22 +8,18 @@ import csv
 from create_dictionary import CreateDictionary
 from column_combination import ColumnCombination
 from transformation import Transformation
-# <<<<<<< HEAD
 from scd_score import Special_Case_Detection
 from statsmodels.datasets import elec_equip as ds
-from Create_SCD_df import CreateDataFrame
 import pandas as pd
 
-# =======
 from rank import Rank
 import time
-# >>>>>>> 5693a6a3d1709a7b4c8004b0ebab9fbf890fd26f
 
 if __name__ == "__main__":
 
 
-    # f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
-    f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
+    f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
+    # f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
     # f = open("./traffic_accident.csv", 'r', encoding='utf-8')
     rdr = csv.reader(f)

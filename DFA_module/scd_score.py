@@ -10,6 +10,13 @@ import pandas as pd
 class Special_Case_Detection():
 
     def __init__(self, data_dict, scenario_dict, window_year=12, window_month=28):
+        """
+        :param data_dict: data dictionary
+        :param scenario_dict: scenario dictionary
+        :param window_year: year window for Moving average
+        :param window_month: month window for Moving average
+        """
+
 
         self.window_year = window_year
         self.window_month = window_month
@@ -20,6 +27,17 @@ class Special_Case_Detection():
 
 
     def get_subdimension_column(self, i):
+        """
+        Transform original grouped data to grouped data by sub-dimension
+            1. Transform original grouped data by 'Year' to grouped data by 'Month'
+            2. Transform original grouped data by 'Month' to grouped data by 'Day'
+        :param i: scenario dictionary index
+        :return:
+        Y: transformed data
+        X_unit: grouped unit of original data
+        Y_shape: data size, it must be larger than MA_window * 2
+        zero_ratio: # of zero value / data size
+        """
 
         if 'year' in self.scenario_dict[i]['X']:
             X_name = self.scenario_dict[i]['X']
@@ -251,6 +269,11 @@ class Special_Case_Detection():
 
 
     def date_key_generation(self, grouped, X_unit):
+        """
+        :param grouped:
+        :param X_unit:
+        :return:
+        """
 
         if X_unit == 'Year':
 
