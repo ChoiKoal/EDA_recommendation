@@ -39,15 +39,39 @@ class Special_Case_Detection():
         zero_ratio: # of zero value / data size
         """
 
-        if 'year' in self.scenario_dict[i]['X']:
-            X_name = self.scenario_dict[i]['X']
+        if 'year+month' in self.scenario_dict[i]['X']:
+            X = self.scenario_dict[i]['X']
+            X_name = self.scenario_dict[i]['X'].split(',')[0] + 'Year'
+            X_name_sub = self.scenario_dict[i]['X'].split(',')[0] + 'Month'
             X_unit = 'Year'
-            X_name_sub = X_name.replace('year', 'month')
             Y_name = self.scenario_dict[i]['Y']
             agg_func = self.scenario_dict[i]['Agg_func_Y']
 
+            col = {}
+            col[X_name] = []
+            col[X_name_sub] = []
 
-            wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],'%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],'%s' % (Y_name): self.data_dict[Y_name]['data']})
+
+            for enum in range(len(self.data_dict[X]['data'])):
+                if self.data_dict[X]['data'][enum] != 0:
+                    col[X_name].append(int(self.data_dict[X]['data'][enum].split(' ')[0]))
+                    col[X_name_sub].append(int(self.data_dict[X]['data'][enum].split(' ')[1]))
+                else:
+                    col[X_name].append(0)
+                    col[X_name_sub].append(0)
+
+            wrapped = pd.DataFrame({'%s' % (X_name): col[X_name],
+                                    '%s' % (X_name_sub): col[X_name_sub],
+                                    '%s' % (Y_name): self.data_dict[Y_name]['data']})
+
+
+            # wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X]['data'].split(' ')[0],
+            #                         '%s' % (X_name_sub): self.data_dict[X]['data'].split(' ')[1],
+            #                         '%s' % (Y_name): self.data_dict[Y_name]['data']})
+
+            # wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],
+            #                         '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
+            #                         '%s' % (Y_name): self.data_dict[Y_name]['data']})
 
             # print("scenario %s" % i, "*******************")
 
@@ -58,17 +82,16 @@ class Special_Case_Detection():
             if 'AVG' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name, X_name_sub]).mean()
 
-            # del wrong date key
             for key_year, key_month in Y_temp[Y_name].keys():
                 if key_year == 0 or key_month == 0:
                     del Y_temp[Y_name][key_year, key_month]
 
-            keys_temp, keys_min, keys_max = self.date_key_generation(Y_temp[Y_name], X_unit)
+            keys_date = self.date_key_generation(Y_temp[Y_name], X_unit)
 
-            # adding empty date key
-            for k1, k2 in keys_temp:
-                if not(k1,k2) in Y_temp[Y_name].keys():
-                    Y_temp[Y_name][k1,k2] = 0
+
+            for k1, k2 in keys_date:
+                if not (k1, k2) in Y_temp[Y_name].keys():
+                    Y_temp[Y_name][(k1, k2)] = 0
 
             Y = pd.DataFrame(Y_temp[Y_name])
             Y = Y.sort_index()
@@ -79,112 +102,9 @@ class Special_Case_Detection():
                 if values == 0:
                     count += 1
             zero_ratio = count / Y_shape
-
-        elif 'month' in self.scenario_dict[i]['X']:
-
-            X_name = self.scenario_dict[i]['X']
-            X_unit = 'Month'
-            X_name_sub = X_name.replace('month', 'day')
-            X_name_sup = X_name.replace('month', 'year')
-            Y_name = self.scenario_dict[i]['Y']
-            agg_func = self.scenario_dict[i]['Agg_func_Y']
-
-            wrapped = pd.DataFrame({'%s' % (X_name_sup): self.data_dict[X_name_sup]['data'],
-                                    '%s' % (X_name): self.data_dict[X_name]['data'],
-                                    '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
-                                    '%s' % (Y_name): self.data_dict[Y_name]['data']})
-
-            # print("scenario %s" % i, "*******************")
-
-            if 'COUNT' in agg_func:
-                Y_temp = wrapped.groupby(by=[X_name_sup, X_name, X_name_sub]).count()
-            if 'SUM' in agg_func:
-                Y_temp = wrapped.groupby(by=[X_name_sup, X_name, X_name_sub]).sum()
-            if 'AVG' in agg_func:
-                Y_temp = wrapped.groupby(by=[X_name_sup, X_name, X_name_sub]).mean()
-
-            # del wrong date key
-            for key_year, key_month, key_day in Y_temp[Y_name].keys():
-                if key_year == 0 or key_month == 0 or key_day == 0:
-                    del Y_temp[Y_name][key_year, key_month, key_day]
-
-            keys_temp, keys_min, keys_max = self.date_key_generation(Y_temp[Y_name], X_unit)
-
-
-            # adding empty date key
-            for k1, k2, k3 in keys_temp:
-                if not (k1, k2, k3) in Y_temp[Y_name].keys():
-                    Y_temp[Y_name][k1, k2, k3] = 0
-
-            Y_add = pd.DataFrame(Y_temp[Y_name])
-            Y_add = Y_add.sort_index()
-            # print("adding empty date ********")
-            # print(Y_add)
-
-            key_year_max = keys_max[0]
-
-            for key_year, key_month, key_day in Y_temp[Y_name].keys():
-                if key_year != key_year_max:
-                    del Y_add[Y_name][key_year, key_month, key_day]
-
-            Y = pd.DataFrame(Y_add[Y_name])
-
-            # only for group by month
-            '''
-            wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],
-                                    '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
-                                    '%s' % (Y_name): self.data_dict[Y_name]['data']})
-
-
-            print("scenario %s" % i, "*******************")
-
-            if 'COUNT' in agg_func:
-                Y_temp = wrapped.groupby(by = [X_name, X_name_sub]).count()
-            if 'SUM' in agg_func:
-                Y_temp = wrapped.groupby(by = [X_name, X_name_sub]).sum()
-            if 'AVG' in agg_func:
-                Y_temp = wrapped.groupby(by = [X_name, X_name_sub]).mean()
-
-
-            for key_year, key_month in Y_temp[Y_name].keys():
-                if key_year == 0 or key_month == 0:
-                    del Y_temp[Y_name][key_year, key_month]
-
-            key_year_min, key_month_min = min(Y_temp[Y_name].keys())
-            key_year_max, key_month_max = max(Y_temp[Y_name].keys())
-
-            # print(Y_temp[Y_name])
-            # print(key_year_min, key_month_min)
-            # print(key_year_max, key_month_max)
-            keys_temp = []
-            month_size = [31,29,31,30,31,30,31,31,30,31,30,31]
-
-            for temp_month in range(key_year_max-key_year_min+1):
-                if temp_month == 0:
-                    for temp_day in range(month_size[temp_month]-key_month_min+1):
-                        keys_temp.append((key_year_min+temp_month, key_month_min+temp_day))
-                elif temp_month == key_year_max-key_year_min:
-                    for temp_day in range(key_month_max):
-                        keys_temp.append((key_year_min+temp_month, 1+temp_day))
-                else:
-                    for temp2 in range(month_size[temp_month]):
-                        keys_temp.append((key_year_min + temp_month, 1 + temp_day))
-
-            for k1, k2 in keys_temp:
-                if not(k1,k2) in Y_temp[Y_name].keys():
-                    Y_temp[Y_name][k1,k2] = 0
-            '''
-
-            Y_shape = Y.shape[0]
-            count = 0
-            for values in Y[Y_name].values:
-                if values == 0:
-                    count += 1
-            zero_ratio = count / Y_shape
-
-            # print(Y)
-            # print(zero_ratio)
-
+            # if Y.shape[0] >= np.multiply(2,self.window_year):
+            #     print("scenario %s" % i, "*******************")
+            #     print(Y)
         else:
             Y = 0
             X_unit = 0
@@ -200,9 +120,9 @@ class Special_Case_Detection():
             if 'year' or 'month' in self.scenario_dict[i]['X']:
                 data, data_unit, data_size, zero_ratio = self.get_subdimension_column(i)
 
-                if zero_ratio >= 0.2:
+                if zero_ratio >= 0.5:
                     least_window = 0
-                if zero_ratio < 0.2:
+                if zero_ratio < 0.5:
                     if data_unit == self.bin_unit_year:
                         if data_size < self.window_year * 2:
                             least_window = 0
@@ -228,7 +148,7 @@ class Special_Case_Detection():
                     seasonal = stl.seasonal
                     residual = stl.resid
                     nobs = stl.nobs
-                    recent_ratio = 0.75
+                    recent_ratio = 0.5
                     recent_point = np.multiply(nobs, recent_ratio)
 
                     residual_mean = np.mean(residual)
@@ -252,7 +172,6 @@ class Special_Case_Detection():
                 if score > 0:
                     print("scenario %s" % i, "*******************")
                     print(self.scenario_dict[i])
-                    print(data)
                     # plt.plot(trend)
                     # print(data, data_unit)
 
@@ -278,76 +197,40 @@ class Special_Case_Detection():
         if X_unit == 'Year':
 
             key_year_min, key_month_min = min(grouped.keys())
-            keys_min = min(grouped.keys())
             key_year_max, key_month_max = max(grouped.keys())
-            keys_max = max(grouped.keys())
 
-            keys_temp = []
+            keys_date = []
+            #
+            # key_year_min, key_month_min = keys_min.split(' ')
+            # key_year_max, key_month_max = keys_max.split(' ')
 
-            # print(key_year_min, key_month_min)
-            # print(key_year_max, key_month_max)
-
-            for temp_month in range(key_year_max - key_year_min + 1):
-                if temp_month == 0:
-                    for temp_day in range(13 - key_month_min):
-                        keys_temp.append((key_year_min + temp_month, key_month_min + temp_day))
-                elif temp_month == key_year_max - key_year_min:
-                    for temp_day in range(key_month_max):
-                        keys_temp.append((key_year_min + temp_month, 1 + temp_day))
-                else:
-                    for temp_day in range(12):
-                        keys_temp.append((key_year_min + temp_month, 1 + temp_day))
-
-        elif X_unit == 'Month':
-
-            key_year_min, key_month_min, key_day_min = min(grouped.keys())
-            keys_min = min(grouped.keys())
-            key_year_max, key_month_max, key_day_max = max(grouped.keys())
-            keys_max = max(grouped.keys())
-
-            keys_temp = []
-            month_size = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-
-            # print(key_year_min, key_month_min, key_day_min)
-            # print(key_year_max, key_month_max, key_day_max)
+            # key_year_min, key_month_min, key_year_max, key_month_max = int(key_year_min), int(key_month_min), int(key_year_max), int(key_month_max)
 
             for temp_year in range(key_year_max - key_year_min + 1):
                 if temp_year == 0 and key_year_max == key_year_min:
                     for temp_month in range(key_month_max - key_month_min + 1):
-                        if temp_month == 0:
-                            for temp_day in range(month_size[key_month_min+temp_month] - key_day_min + 1):
-                                keys_temp.append((key_year_min, key_month_min + temp_month, key_day_min + temp_day))
-                        elif temp_month == key_month_max - key_month_min:
-                            for temp_day in range(key_day_max):
-                                keys_temp.append((key_year_min, key_month_min + temp_month, 1 + temp_day))
-                        else:
-                            for temp_day in range(month_size[key_month_min+temp_month]):
-                                keys_temp.append((key_year_min+temp_year, key_month_min + temp_month, 1 + temp_day))
-                # elif temp_year == 0 and key_year_max != key_year_min:
-                #     for temp_month in range(13 - key_month_min):
-                #         if temp_month == 0 and key_month_min == 12:
-                #             for temp_day in range(month_size[key_month_min-1] - key_day_min + 1):
-                #                 keys_temp.append((key_year_min, key_month_min, key_day_min + temp_day))
-                #         elif temp_month == 0 and key_month_min != 12:
-                #             for temp_day in range(month_size[key_month_min+temp]):
-                #                 keys_temp.append((key_year_min, key_month_min+temp_month, temp_day+1))
-                #         else:
-                #             for temp_day in range(month_size[temp_month]):
-                #                 keys_temp.append((key_year_min+temp_year, key_month_min + temp_month, 1 + temp_day))
-                elif temp_year == key_year_max - key_year_min and key_year_max != key_year_min:
+                        month = temp_month + key_month_min
+                        # date = str(key_year_min) + ' ' + str(month)
+                        date = (key_year_min, month)
+                        keys_date.append(date)
+                elif temp_year == 0 and key_year_max != key_year_min:
+                    for temp_month in range(12 - key_month_min + 1):
+                        month = temp_month + key_month_min
+                        # date = str(key_year_min) + ' ' + str(month)
+                        date = (key_year_min, month)
+                        keys_date.append(date)
+                elif temp_year == key_year_max - key_year_min:
                     for temp_month in range(key_month_max):
-                        if temp_month == 0:
-                            for temp_day in range(month_size[temp_month]):
-                                keys_temp.append((key_year_min+temp_year, 1 + temp_month, 1 + temp_day))
-                        elif temp_month == key_month_max:
-                            for temp_day in range(key_day_max):
-                                keys_temp.append((key_year_min+temp_year, 1 + temp_month, 1 + temp_day))
-                        else:
-                            for temp_day in range(month_size[temp_month]):
-                                keys_temp.append((key_year_min+temp_year, 1 + temp_month, 1 + temp_day))
-                # else:
-                #     for temp_month in range(12):
-                #         for temp2 in range(month_size[temp_month]):
-                #             keys_temp.append((key_year_min+temp_year, temp+1, 1 + temp2))
+                        month = temp_month + 1
+                        # date = str(key_year_max) + ' ' + str(month)
+                        date = (key_year_max, month)
+                        keys_date.append(date)
+                else:
+                    for temp_month in range(12):
+                        year = key_year_min + temp_year
+                        month = temp_month + 1
+                        # date = str(year) + ' ' + str(month)
+                        date = (year, month)
+                        keys_date.append(date)
 
-        return keys_temp, keys_min, keys_max
+        return keys_date

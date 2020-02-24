@@ -46,7 +46,6 @@ def DFA_module(input_data):
 
     # Time check
     startTime = time.time()
-
     # Create Column Data Dictionary
     data_dict = CreateDictionary(data_table, data_type).initialize_dic()
     runtime = time.time()

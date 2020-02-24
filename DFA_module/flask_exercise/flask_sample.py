@@ -14,13 +14,7 @@ def json_sample():
 
         req = request.get_json() #json to dict
 
-        length = DFA_module.DFA_module(req)
-
-        response_body = {
-            "original json": req,
-            "length": length
-        }
-
+        response_body = DFA_module.DFA_module(req)
         res = make_response(jsonify(response_body), 200)
 
         return res

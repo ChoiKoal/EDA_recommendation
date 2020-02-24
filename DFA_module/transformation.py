@@ -53,12 +53,16 @@ class Transformation():
         m_score_bar = []
         m_score_line = []
         m_score_scatter = []
+        # for key in self.scenario_dict:
+        #     if self.scenario_dict
         for key in self.scenario_dict:
-
+            if math.isnan(self.scenario_dict[key]["Scatter_chart_score"]):
+                m_score_scatter.append(0)
+            else:
+                m_score_scatter.append(self.scenario_dict[key]["Scatter_chart_score"])
             m_score_pie.append(self.scenario_dict[key]["Pie_chart_score"])
             m_score_bar.append(self.scenario_dict[key]["Bar_chart_score"])
             m_score_line.append(self.scenario_dict[key]["Line_chart_score"])
-            m_score_scatter.append(self.scenario_dict[key]["Scatter_chart_score"])
 
         m_score_pie /= np.max(m_score_pie)
         m_score_bar /= np.max(m_score_bar)
@@ -66,16 +70,18 @@ class Transformation():
         m_score_scatter /= np.max(m_score_scatter)
         m_score = [m_score_pie, m_score_bar, m_score_line, m_score_scatter]
         match_index = np.argmax(m_score, axis = 0)
+        i = 0
         for key in self.scenario_dict:
-            if match_index[int(key)] == 0:
+            if match_index[i] == 0:
                 self.scenario_dict[key]["Chart_Type"] = "pie"
-            if match_index[int(key)] == 1:
+            if match_index[i] == 1:
                 self.scenario_dict[key]["Chart_Type"] = "bar"
-            if match_index[int(key)] == 2:
+            if match_index[i] == 2:
                 self.scenario_dict[key]["Chart_Type"] = "line"
-            if match_index[int(key)] == 3:
+            if match_index[i] == 3:
                 self.scenario_dict[key]["Chart_Type"] = "scatter"
-            self.scenario_dict[key]["m_score"] = m_score[match_index[int(key)]][int(key)]
+            self.scenario_dict[key]["m_score"] = m_score[match_index[i]][i]
+            i += 1
 
         return self.scenario_dict
 
@@ -229,11 +235,13 @@ class Transformation():
             combination_dict_new['column_count'] = 2
             three_column = True
             self.categorical_transformation(combination_dict_new, three_column)
-            self.scenario_dict["%s" % (self.scenario_num-1)]['transform'] = "GROUPBY %s GROUPBY %s Agg(sum) %s" %(column_name[0], column_name[1], num_column_name)
-            self.scenario_dict["%s" % (self.scenario_num-1)]['X'] = column_name[0]
-            self.scenario_dict["%s" % (self.scenario_num-1)]['X2'] = column_name[1]
-            self.scenario_dict["%s" % (self.scenario_num-1)]['Agg_func_X2'] = "GROUPBY"
-            self.scenario_dict["%s" % (self.scenario_num-1)]['3column'] = True
+
+            if "%s" % (self.scenario_num-1) in self.scenario_dict:
+                self.scenario_dict["%s" % (self.scenario_num-1)]['transform'] = "GROUPBY %s GROUPBY %s Agg(sum) %s" %(column_name[0], column_name[1], num_column_name)
+                self.scenario_dict["%s" % (self.scenario_num-1)]['X'] = column_name[0]
+                self.scenario_dict["%s" % (self.scenario_num-1)]['X2'] = column_name[1]
+                self.scenario_dict["%s" % (self.scenario_num-1)]['Agg_func_X2'] = "GROUPBY"
+                self.scenario_dict["%s" % (self.scenario_num-1)]['3column'] = True
             self.data_dict.pop(comb_column_name, None)
 
 
@@ -283,9 +291,8 @@ class Transformation():
             count += 1
         agg_data = pd.DataFrame(np.reshape(agg_data, [-1, 2]))
         if count > 0:
-
-
             agg_data = agg_data[1].groupby(agg_data[0]).count()
+            complete = True
             agg_data = pd.Series.sort_values(agg_data)
             transform_scenario = {}
             transform_scenario["transform"] = "Groupby %s Count %s" %(combination_dict1, combination_dict2)
@@ -301,7 +308,7 @@ class Transformation():
             # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
             # print("Transformation score : %.4f" % self.scenario_dict["%d" % self.scenario_num]["transform_score"])
             self.scenario_num += 1
-            complete = True
+
         return agg_data, complete
 
 
@@ -345,7 +352,7 @@ class Transformation():
         agg_data = pd.DataFrame(np.reshape(agg_data, [-1, 2]))
 
         if count > 0:
-
+            complete = True
             agg_data[1] = agg_data[1].astype(float) #type casting.... data_dict->agg data(str)
             agg_data = agg_data[1].groupby(agg_data[0]).sum()
             agg_data = pd.Series.sort_values(agg_data)
@@ -364,7 +371,7 @@ class Transformation():
             # print (self.scenario_dict["%d" %self.scenario_num]["transform"])
             # print ("Transformation score : %.4f" %self.scenario_dict["%d" %self.scenario_num]["transform_score"])
             self.scenario_num += 1
-            complete = True
+
         return agg_data, complete
 
 
@@ -416,7 +423,6 @@ class Transformation():
         :return:
         """
         picked_scenario = self.scenario_dict["%d" % scenario_num]
-
         pie_chart_score = 0
         bar_chart_score = 0
         scatter_chart_score = 0
@@ -447,14 +453,18 @@ class Transformation():
                 bar_chart_score = self.bar_chart_score(grouped)
 
 
+
         # print ("Pie Chart Score : %.4f" % pie_chart_score)
         # print ("Bar Chart Score : %.4f" % bar_chart_score)
-
+        if scenario_num == 3:
+            print ("hello?")
         m_score = [pie_chart_score, bar_chart_score, line_chart_score, scatter_chart_score]
         self.scenario_dict["%d" % scenario_num]["Pie_chart_score"] = pie_chart_score
         self.scenario_dict["%d" % scenario_num]["Bar_chart_score"] = bar_chart_score
         self.scenario_dict["%d" % scenario_num]["Line_chart_score"] = line_chart_score
         self.scenario_dict["%d" % scenario_num]["Scatter_chart_score"] = scatter_chart_score
+        if len(grouped) == 1:
+            del self.scenario_dict["%d" % scenario_num]
 
 
     def pie_chart_score(self, grouped):
