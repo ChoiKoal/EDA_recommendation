@@ -77,6 +77,7 @@ class Special_Case_Detection():
                 wrapped.fillna(method='bfill', inplace=True)
             else:
                 wrapped.interpolate(inplace=True)
+                wrapped.fillna(method='bfill', inplace=True)
 
             if 'COUNT' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name, X_name_sub]).count()
