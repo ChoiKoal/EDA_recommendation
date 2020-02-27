@@ -3,7 +3,9 @@ import math
 from statsmodels.tsa.seasonal import seasonal_decompose
 from statsmodels.datasets import elec_equip as ds
 from pandas import DataFrame as df
+import matplotlib.pyplot as plt
 import pandas as pd
+import time
 
 
 
@@ -25,13 +27,12 @@ class Special_Case_Detection():
         self.data_dict = data_dict
         self.scenario_dict = scenario_dict
 
-
-    def get_subdimension_column(self, i):
+    def get_subdimension_column(self, i, date_dictionary):
         """
         Transform original grouped data to grouped data by sub-dimension
-            1. Transform original grouped data by 'Year' to grouped data by 'Month'
-            2. Transform original grouped data by 'Month' to grouped data by 'Day'
+            Transform original grouped data by 'Year' to grouped data by 'Month'
         :param i: scenario dictionary index
+        :param date_dictionary: date_key dictionary to deal with empty date
         :return:
         Y: transformed data
         X_unit: grouped unit of original data
@@ -40,40 +41,42 @@ class Special_Case_Detection():
         """
 
         if 'year+month' in self.scenario_dict[i]['X']:
+
             X = self.scenario_dict[i]['X']
             X_name = self.scenario_dict[i]['X'].split(',')[0] + 'Year'
             X_name_sub = self.scenario_dict[i]['X'].split(',')[0] + 'Month'
             X_unit = 'Year'
             Y_name = self.scenario_dict[i]['Y']
+            Y_type = self.data_dict[Y_name]['data_type']
             agg_func = self.scenario_dict[i]['Agg_func_Y']
 
+
+            time_data_copy1 = time.time()
             col = {}
             col[X_name] = []
             col[X_name_sub] = []
-
-
+            col[Y_name] = []
             for enum in range(len(self.data_dict[X]['data'])):
                 if self.data_dict[X]['data'][enum] != 0:
                     col[X_name].append(int(self.data_dict[X]['data'][enum].split(' ')[0]))
                     col[X_name_sub].append(int(self.data_dict[X]['data'][enum].split(' ')[1]))
+                    if not self.data_dict[Y_name]['isnull'][enum]:
+                        col[Y_name].append(self.data_dict[Y_name]['data'][enum])
+                    else:
+                        col[Y_name].append(None)
+                        # col[Y_name].append(0)
                 else:
                     col[X_name].append(0)
                     col[X_name_sub].append(0)
+                    col[Y_name].append(0)
 
-            wrapped = pd.DataFrame({'%s' % (X_name): col[X_name],
-                                    '%s' % (X_name_sub): col[X_name_sub],
-                                    '%s' % (Y_name): self.data_dict[Y_name]['data']})
-
-
-            # wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X]['data'].split(' ')[0],
-            #                         '%s' % (X_name_sub): self.data_dict[X]['data'].split(' ')[1],
-            #                         '%s' % (Y_name): self.data_dict[Y_name]['data']})
-
-            # wrapped = pd.DataFrame({'%s' % (X_name): self.data_dict[X_name]['data'],
-            #                         '%s' % (X_name_sub): self.data_dict[X_name_sub]['data'],
-            #                         '%s' % (Y_name): self.data_dict[Y_name]['data']})
-
-            # print("scenario %s" % i, "*******************")
+            wrapped = pd.DataFrame(col)
+            # wrapped.fillna(method = 'ffill', inplace=True)
+            if Y_type == 'tem':
+                wrapped.fillna(method='ffill', inplace=True)
+                wrapped.fillna(method='bfill', inplace=True)
+            else:
+                wrapped.interpolate(inplace=True)
 
             if 'COUNT' in agg_func:
                 Y_temp = wrapped.groupby(by=[X_name, X_name_sub]).count()
@@ -85,16 +88,31 @@ class Special_Case_Detection():
             for key_year, key_month in Y_temp[Y_name].keys():
                 if key_year == 0 or key_month == 0:
                     del Y_temp[Y_name][key_year, key_month]
+                elif key_year < min(date_dictionary[X].keys())[0]:
+                    del Y_temp[Y_name][key_year, key_month]
 
-            keys_date = self.date_key_generation(Y_temp[Y_name], X_unit)
+            Y_dict = Y_temp[Y_name].to_dict()
+            #
+            # min_date_year, min_date_month = list(zip(Y_dict.keys()))[0][0]
+            # max_date_year, max_date_month = list(zip(Y_dict.keys()))[len(Y_dict.keys()) - 1][0]
 
+            # date_dictionary_keys = date_dictionary[X].keys()
+            # for date_key_year, date_key_month in date_dictionary_keys:
+            #     if date_key_year > max_date_year and date_key_month > max_date_month:
+            #         del date_dictionary[X][date_key_year, date_key_month]
+            #     if date_key_year < min_date_year and date_key_month < min_date_month:
+            #         del date_dictionary[X][date_key_year, date_key_month]
 
-            for k1, k2 in keys_date:
-                if not (k1, k2) in Y_temp[Y_name].keys():
-                    Y_temp[Y_name][(k1, k2)] = 0
+            date_dictionary[X].update(Y_dict)
 
-            Y = pd.DataFrame(Y_temp[Y_name])
-            Y = Y.sort_index()
+            Y = pd.DataFrame.from_dict(date_dictionary[X], orient='index')
+            # Y.interpolate(inplace=True)
+            # # Y.fillna(method='ffill', limit = 20, inplace=True)
+            # Y.fillna(method='bfill', inplace=True)
+            Y.fillna(0, inplace=True)
+
+            time_data_copy2 = time.time()
+            time_data_copy = time_data_copy2 - time_data_copy1
 
             Y_shape = Y.shape[0]
             count = 0
@@ -102,9 +120,7 @@ class Special_Case_Detection():
                 if values == 0:
                     count += 1
             zero_ratio = count / Y_shape
-            # if Y.shape[0] >= np.multiply(2,self.window_year):
-            #     print("scenario %s" % i, "*******************")
-            #     print(Y)
+
         else:
             Y = 0
             X_unit = 0
@@ -115,10 +131,20 @@ class Special_Case_Detection():
 
 
     def get_scd_Score(self):
+        """
+        Special Case Detection score
+        """
+        date_dictionary = self.full_date_key_generation()
+        scene = []
+        scene_score = []
 
         for i in self.scenario_dict.keys():
+
             if 'year' or 'month' in self.scenario_dict[i]['X']:
-                data, data_unit, data_size, zero_ratio = self.get_subdimension_column(i)
+
+                runtime3 = time.time()
+
+                data, data_unit, data_size, zero_ratio = self.get_subdimension_column(i, date_dictionary)
 
                 if zero_ratio >= 0.5:
                     least_window = 0
@@ -148,7 +174,17 @@ class Special_Case_Detection():
                     seasonal = stl.seasonal
                     residual = stl.resid
                     nobs = stl.nobs
+
+                    # if nobs[0] > 240:
+                    #     recent_ratio = 0.95
+                    # elif nobs[0] > 120:
+                    #     recent_ratio = 0.9
+                    # elif nobs[0] > 60:
+                    #     recent_ratio = 0.8
+                    # else:
+                    #     recent_ratio = 0.75
                     recent_ratio = 0.5
+
                     recent_point = np.multiply(nobs, recent_ratio)
 
                     residual_mean = np.mean(residual)
@@ -157,80 +193,100 @@ class Special_Case_Detection():
 
                     outlier = np.where(abs(residual_norm) > 3)
                     score = 0
-
+                    score_dict = {}
+                    count = 0
                     for j in range(len(outlier[0])):
+                        # if outlier[0][j] > recent_point and outlier[0][j] < len(nobs) - 6:
                         if outlier[0][j] > recent_point:
                             score_temp = math.log(
                                 math.exp(1) * (1 + (outlier[0][j] - recent_point) / (nobs - recent_point)) / 2)
                             score += score_temp
+                            score_dict[count] = score_temp
+                            count += 1
 
-                    if score > 1.5:
-                        score = 1.5
+                    if score > 2:
+                        score = 2
 
-                self.scenario_dict[i]['scd_score'] = score/1.5
+                    scene.append(i)
 
+                self.scenario_dict[i]['scd_score'] = score/2
+
+                runtime4 = time.time()
+
+                if score == 2:
+                    print("************* score 2 **********************************************")
                 if score > 0:
-                    print("scenario %s" % i, "*******************")
-                    print(self.scenario_dict[i])
-                    # plt.plot(trend)
-                    # print(data, data_unit)
+                    # print(i, "scenario scd time *****************************************")
+                    # print("score : " , score/2)
+                    # print("each score :", score_dict)
+                    # print("runtime : ",runtime4 - runtime3)
+                    # print("data")
+                    scene_score.append(i)
+                    #
+                    # fig = plt.figure()
+                    # ax1 = fig.add_subplot(4,1,1)
+                    # ax1.plot(data.values)
+                    # ax2 = fig.add_subplot(4,1,2)
+                    # ax2.plot(trend.values)
+                    # ax3 = fig.add_subplot(4,1,3)
+                    # ax3.plot(seasonal.values)
+                    # ax4 = fig.add_subplot(4,1,4)
+                    # ax4.plot(residual_norm.values)
+                    # plt.show()
 
             else:
-                # if X is not temporal data
                 self.scenario_dict[i]['scd_score'] = 0
-                # print(self.scenario_dict[i])
 
-            # print(data)
-            # print(self.scenario_dict[i])
+        return scene, scene_score
 
-        # return scd_score, score, least_window
-        # return scd_score
-
-
-    def date_key_generation(self, grouped, X_unit):
+    def full_date_key_generation(self):
         """
-        :param grouped:
-        :param X_unit:
-        :return:
+        date key generation for empty date
+        :return: date_dictionary
         """
+        date_dictionary = {}
 
-        if X_unit == 'Year':
+        for item in self.data_dict.keys():
+            if 'year+month' in item:
 
-            key_year_min, key_month_min = min(grouped.keys())
-            key_year_max, key_month_max = max(grouped.keys())
+                date_dictionary[item] = {}
+                date_list = []
+                for date in self.data_dict[item]['data']:
+                    if date != 0:
+                        date_list.append((int(date.split(" ")[0]), int(date.split(" ")[1])))
 
-            keys_date = []
-            #
-            # key_year_min, key_month_min = keys_min.split(' ')
-            # key_year_max, key_month_max = keys_max.split(' ')
+                key_year_min, key_month_min = min(date_list)
+                key_year_max, key_month_max = max(date_list)
 
-            # key_year_min, key_month_min, key_year_max, key_month_max = int(key_year_min), int(key_month_min), int(key_year_max), int(key_month_max)
+                if key_year_max - key_year_min > 20:
+                    key_year_min = key_year_max - 20
+                    key_month_min = 1
 
-            for temp_year in range(key_year_max - key_year_min + 1):
-                if temp_year == 0 and key_year_max == key_year_min:
-                    for temp_month in range(key_month_max - key_month_min + 1):
-                        month = temp_month + key_month_min
-                        # date = str(key_year_min) + ' ' + str(month)
-                        date = (key_year_min, month)
-                        keys_date.append(date)
-                elif temp_year == 0 and key_year_max != key_year_min:
-                    for temp_month in range(12 - key_month_min + 1):
-                        month = temp_month + key_month_min
-                        # date = str(key_year_min) + ' ' + str(month)
-                        date = (key_year_min, month)
-                        keys_date.append(date)
-                elif temp_year == key_year_max - key_year_min:
-                    for temp_month in range(key_month_max):
-                        month = temp_month + 1
-                        # date = str(key_year_max) + ' ' + str(month)
-                        date = (key_year_max, month)
-                        keys_date.append(date)
-                else:
-                    for temp_month in range(12):
-                        year = key_year_min + temp_year
-                        month = temp_month + 1
-                        # date = str(year) + ' ' + str(month)
-                        date = (year, month)
-                        keys_date.append(date)
+                for temp_year in range(key_year_max - key_year_min + 1):
+                    if temp_year == 0 and key_year_max == key_year_min:
+                        for temp_month in range(key_month_max - key_month_min + 1):
+                            month = temp_month + key_month_min
+                            date = (key_year_min, month)
+                            # date_dictionary[item][date] = 0
+                            date_dictionary[item][date] = None
+                    elif temp_year == 0 and key_year_max != key_year_min:
+                        for temp_month in range(12 - key_month_min + 1):
+                            month = temp_month + key_month_min
+                            date = (key_year_min, month)
+                            # date_dictionary[item][date] = 0
+                            date_dictionary[item][date] = None
+                    elif temp_year == key_year_max - key_year_min:
+                        for temp_month in range(key_month_max):
+                            month = temp_month + 1
+                            date = (key_year_max, month)
+                            # date_dictionary[item][date] = 0
+                            date_dictionary[item][date] = None
+                    else:
+                        for temp_month in range(12):
+                            year = key_year_min + temp_year
+                            month = temp_month + 1
+                            date = (year, month)
+                            # date_dictionary[item][date] = 0
+                            date_dictionary[item][date] = None
 
-        return keys_date
+        return date_dictionary

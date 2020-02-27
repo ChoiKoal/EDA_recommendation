@@ -116,31 +116,31 @@ class CreateDictionary():
         :param column: temporal column
         :return: column
         """
-        for enum in range(len(column['data'])):
-            if column['isnull'][enum] != True:
-                column['month'].append(int(column['data'][enum].split("/")[0]))
-                column['day'].append(int(column['data'][enum].split("/")[1]))
-                column['year'].append(int(column['data'][enum].split("/")[2]))
-                column['year+month'].append(column['data'][enum].split("/")[2] + " " + column['data'][enum].split("/")[0])
-            else:
-                column['year'].append(0)
-                column['month'].append(0)
-                column['day'].append(0)
-                column['year+month'].append(0)
-        return column
         # for enum in range(len(column['data'])):
         #     if column['isnull'][enum] != True:
-        #         column['year'].append(int(column['data'][enum].split("-")[0]))
-        #         column['month'].append(int(column['data'][enum].split("-")[1]))
-        #         column['day'].append(int(column['data'][enum].split("-")[2]))
-        #         column['year+month'].append(column['data'][enum].split("-")[0] + " " + column['data'][enum].split("-")[1])
+        #         column['month'].append(int(column['data'][enum].split("/")[0]))
+        #         column['day'].append(int(column['data'][enum].split("/")[1]))
+        #         column['year'].append(int(column['data'][enum].split("/")[2]))
+        #         column['year+month'].append(column['data'][enum].split("/")[2] + " " + column['data'][enum].split("/")[0])
         #     else:
         #         column['year'].append(0)
         #         column['month'].append(0)
         #         column['day'].append(0)
         #         column['year+month'].append(0)
-        #
         # return column
+        for enum in range(len(column['data'])):
+            if column['isnull'][enum] != True:
+                column['year'].append(int(column['data'][enum].split("-")[0]))
+                column['month'].append(int(column['data'][enum].split("-")[1]))
+                column['day'].append(int(column['data'][enum].split("-")[2]))
+                column['year+month'].append(column['data'][enum].split("-")[0] + " " + column['data'][enum].split("-")[1])
+            else:
+                column['year'].append(0)
+                column['month'].append(0)
+                column['day'].append(0)
+                column['year+month'].append(0)
+
+        return column
         # for enum in range(len(column['data'])):
         #     if column['isnull'][enum] != True:
         #         column['year'].append(int(column['data'][enum].split(".")[0]))
@@ -152,8 +152,8 @@ class CreateDictionary():
         #         column['month'].append(0)
         #         column['day'].append(0)
         #         column['year+month'].append(0)
-
-        return column
+        #
+        # return column
 
     def calculate_Avg(self, column):
         """

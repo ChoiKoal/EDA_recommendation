@@ -122,6 +122,7 @@ class Transformation():
                 transformed, complete = self.groupby_agg(wrapped, combination_dict['column2'], combination_dict['column1'])
                 if complete == True:
                     self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed, self.scenario_num - 1)
+                    # self.calculate_match_performance_score(transformed, self.scenario_num - 1)
                 # self.scenario_dict["%d" % (self.scenario_num-1)]['m_score']  = self.calculate_match_performance_score(transformed_2, self.scenario_num - 1)
 
 
@@ -463,8 +464,8 @@ class Transformation():
         self.scenario_dict["%d" % scenario_num]["Bar_chart_score"] = bar_chart_score
         self.scenario_dict["%d" % scenario_num]["Line_chart_score"] = line_chart_score
         self.scenario_dict["%d" % scenario_num]["Scatter_chart_score"] = scatter_chart_score
-        if len(grouped) == 1:
-            del self.scenario_dict["%d" % scenario_num]
+        # if len(grouped) == 1:
+        #     del self.scenario_dict["%d" % scenario_num]
 
 
     def pie_chart_score(self, grouped):

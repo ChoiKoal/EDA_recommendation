@@ -22,13 +22,15 @@ if __name__ == "__main__":
     Dataset 1: TmaxDay_data
     Dataset 2: tmax_raw_data (from ERP)
     Dataset 3: Carcrash data
+    Dataset 5: Economy data
     """
 
     # read CSV file format (may change)
-    # f = open("./jeju_wood.csv", 'r', encoding='utf-8')
-    f = open("./TmaxDay_data.csv", 'r', encoding='utf-8')
-    # f = open("./tmax_raw_data.csv", 'r', encoding='utf-8')
+    # f = open("./jeju_wood.csv", 'r', encoding='utf-8') # date(-)
+    # f = open("./TmaxDay_data.csv", 'r', encoding='utf-8') # date(/)
+    # f = open("./tmax_raw_data.csv", 'r', encoding='utf-8') # date(.)
     # f = open("./carcrash.csv", 'r', encoding='utf-8')
+    f = open("./economy.csv", 'r', encoding='utf-8') # date(-)
     rdr = csv.reader(f)
     data_table = []
     for line in rdr:
@@ -39,9 +41,10 @@ if __name__ == "__main__":
     # get data_type (from meta in future)
 
     # data_type = ["cat", "cat", "cat", "cat", "tem", "cat", "cat", "cat", "num", "num", "num", "num", "cat", "cat", "cat", "num", "num"]
-    data_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"] #tmaxday
+    # data_type = ["tem", "cat", "cat", "num", "cat", "num", "num", "num", "num"] #tmaxday
     # data_type = ["cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "tem", "tem", "num", "cat", "num", "num", "num", "cat"]  #tmax_raw_data_set
     # data_type = ["cat", "cat", "cat", "cat", "num", "num", "num", "num", "num", "num"] #carcrash
+    data_type = ["num", "tem", "cat", "num", "cat", "num", "num", "num", "num", "num", "num", "num", "num", "num", "num", "num"] #economy
 
 
     # data_table = []
@@ -61,9 +64,13 @@ if __name__ == "__main__":
     data_dict = CreateDictionary(data_table, data_type).initialize_dic()
     runtime = time.time()
 
+
+
+
     # Pop the csv object to reduce memory usage
     del data_table
     print ("Runtime : %.4f" % (runtime-startTime))
+    print("*" * 120)
 
     # Create Column Combination
     column_combination = ColumnCombination(data_dict).create_combination()
@@ -71,6 +78,7 @@ if __name__ == "__main__":
     print ("Column combination Created.")
     runtime2 = time.time()
     print("Runtime : %.4f" % (runtime2 - runtime))
+    print("*" * 120)
 
     # Create Scenario Dictionary - Transformation + Guessing Scenario value
     scenario_dict = Transformation(data_dict, column_combination).transformation()
@@ -78,11 +86,20 @@ if __name__ == "__main__":
     print ("Scenario dictionary created")
     runtime3 = time.time()
     print("Runtime : %.4f" % (runtime3 - runtime2))
+    print("*" * 120)
+    # Special_Case_Detection(data_dict, scenario_dict).get_scd_Score()
+    scene, scene_score = Special_Case_Detection(data_dict, scenario_dict).get_scd_Score()
+    runtime4 = time.time()
 
-    Special_Case_Detection(data_dict, scenario_dict).get_scd_Score()
+    print("SCD score calaulated")
+    print("scene (len: %s): " % len(scene), scene)
+    print("scored scene (len: %s): " % len(scene_score), scene_score)
+    print("Runtime : %.4f" % (runtime4 - runtime3))
+    print("*" * 120)
 
     # Calculate Scenario score and Rank. Top 20 will be printed
     picked_scenario = Rank(scenario_dict).rank()
+    print("*" * 120)
 
     # Final Time Check
     endTime = time.time() - startTime
@@ -90,6 +107,7 @@ if __name__ == "__main__":
     json = JsonGenerator(picked_scenario).generate_json()
     print ("Program Runtime : %.4f" % endTime)
 
+    print("*" * 120)
     print (json)
 
 
